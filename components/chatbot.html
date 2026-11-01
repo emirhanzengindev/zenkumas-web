@@ -1,0 +1,17 @@
+<!-- Reusable chatbot component -->
+<div id="chatbot-widget" class="fixed bottom-20 right-4 w-72 bg-white shadow-lg rounded-2xl border border-gray-200 hidden flex-col overflow-hidden z-50">
+    <div class="bg-blue-600 text-white px-4 py-2 flex justify-between items-center">
+        <span class="font-semibold">Zen Kumaş Asistan</span>
+        <button id="chatbot-close" class="text-white hover:text-gray-200">✕</button>
+    </div>
+    <div id="chatbot-messages" class="p-3 h-64 overflow-y-auto text-sm space-y-2"></div>
+    <div class="p-2 border-t flex">
+        <input id="chatbot-input" type="text" placeholder="Mesaj yazın..." class="flex-1 px-2 py-1 text-sm border rounded-l focus:outline-none" />
+        <button id="chatbot-send" class="bg-blue-600 text-white px-3 rounded-r">➤</button>
+    </div>
+</div>
+
+<!-- Chatbot toggle button -->
+<button id="chatbot-toggle" class="fixed bottom-4 right-4 bg-black text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg z-40">
+    Z
+</button>

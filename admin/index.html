@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetim Paneli | Zentekstil</title>
+    <meta name="description" content="Zentekstil admin paneli">
+    
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-900">Yönetim Paneli</h1>
+            <div class="flex items-center space-x-4">
+                <span id="admin-name" class="text-gray-700"></span>
+                <button onclick="logout()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">
+                    Çıkış Yap
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Toplam Kumaş</h3>
+                <p id="total-fabrics" class="text-3xl font-bold text-blue-600">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Stoktaki Kumaş</h3>
+                <p id="in-stock" class="text-3xl font-bold text-green-600">0</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h3 class="text-lg font-medium text-gray-900 mb-2">Tükenen Kumaş</h3>
+                <p id="out-of-stock" class="text-3xl font-bold text-red-600">0</p>
+            </div>
+        </div>
+
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+                <h2 class="text-lg leading-6 font-medium text-gray-900">Kumaş Listesi</h2>
+                <a href="duzenle.html" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+                    Yeni Kumaş Ekle
+                </a>
+            </div>
+            <div class="border-t border-gray-200">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kumaş Adı</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tür</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok Durumu</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fabrics-table-body" class="bg-white divide-y divide-gray-200">
+                        <!-- Fabric data will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const apiBase = 'https://api.zentekstil.com.tr';
+        
+        // Check if user is logged in
+        function checkAuth() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user || user.role !== 'admin') {
+                window.location.href = '../giris.html';
+                return;
+            }
+            
+            document.getElementById('admin-name').textContent = user.isim;
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = '../index.html';
+        }
+
+        // Load fabrics
+        async function loadFabrics() {
+            try {
+                const response = await fetch(`${apiBase}/kumaslar`);
+                const fabrics = await response.json();
+                
+                // Update statistics
+                document.getElementById('total-fabrics').textContent = fabrics.length;
+                
+                const inStock = fabrics.filter(f => f.stok_durumu === 'evet').length;
+                const outOfStock = fabrics.length - inStock;
+                
+                document.getElementById('in-stock').textContent = inStock;
+                document.getElementById('out-of-stock').textContent = outOfStock;
+                
+                // Populate table
+                const tableBody = document.getElementById('fabrics-table-body');
+                tableBody.innerHTML = '';
+                
+                fabrics.forEach(fabric => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    <img class="h-10 w-10 rounded-full" src="${apiBase}/uploads/${fabric.kartela_resmi}" alt="${fabric.isim}">
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">${fabric.isim}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            ${fabric.tur || 'Belirtilmemiş'}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                ${fabric.stok_durumu === 'evet' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                                ${fabric.stok_durumu === 'evet' ? 'Stokta' : 'Tükendi'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <a href="duzenle.html?id=${fabric.id}" class="text-blue-600 hover:text-blue-900 mr-3">Düzenle</a>
+                            <button onclick="deleteFabric(${fabric.id})" class="text-red-600 hover:text-red-900">Sil</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading fabrics:', error);
+                alert('Kumaşlar yüklenirken bir hata oluştu.');
+            }
+        }
+
+        // Delete fabric
+        async function deleteFabric(id) {
+            if (!confirm('Bu kumaşı silmek istediğinize emin misiniz?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${apiBase}/kumaslar/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    alert('Kumaş başarıyla silindi.');
+                    loadFabrics(); // Refresh the list
+                } else {
+                    alert('Kumaş silinirken bir hata oluştu.');
+                }
+            } catch (error) {
+                console.error('Error deleting fabric:', error);
+                alert('Kumaş silinirken bir hata oluştu.');
+            }
+        }
+
+        // Initialize
+        checkAuth();
+        loadFabrics();
+    </script>
+</body>
+</html>

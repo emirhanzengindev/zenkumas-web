@@ -1,0 +1,328 @@
+/* ============================================================
+   Zen Kumaş - Global Styles
+   Design language: warm cream / ink / bronze, Playfair + Inter
+   ============================================================ */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+    background: #B08968;
+    color: #fff;
+}
+
+/* Subtle scrollbar */
+::-webkit-scrollbar {
+    width: 9px;
+}
+
+::-webkit-scrollbar-track {
+    background: #F1EAE0;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #C9B8A5;
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #B08968;
+}
+
+/* ---------- Header / Navigation ---------- */
+#site-header {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease;
+}
+
+.nav-link {
+    position: relative;
+    color: #5B534A;
+    transition: color 0.25s ease;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -6px;
+    width: 0;
+    height: 2px;
+    background: #B08968;
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #221E19;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 100%;
+}
+
+.nav-link.active {
+    color: #221E19;
+    font-weight: 600;
+}
+
+/* Hamburger animation */
+#menu-toggle .bar {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+#menu-toggle.menu-open .bar-top {
+    transform: translateY(7px) rotate(45deg);
+}
+
+#menu-toggle.menu-open .bar-mid {
+    opacity: 0;
+}
+
+#menu-toggle.menu-open .bar-bot {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ---------- Hero Slider ---------- */
+/* Project spec: arrows stay 30px x 30px */
+.swiper-button-next,
+.swiper-button-prev {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(4px);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    top: 50%;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    background-color: rgba(255, 255, 255, 0.35);
+    transform: scale(1.1);
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+/* Project spec: pagination dots stay 8px */
+.swiper-pagination-bullet {
+    background-color: rgba(255, 255, 255, 0.55);
+    opacity: 1;
+    width: 8px;
+    height: 8px;
+    transition: all 0.3s ease;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: #D2B48C;
+    transform: scale(1.2);
+}
+
+.hero-overlay {
+    background:
+        linear-gradient(90deg, rgba(34, 30, 25, 0.88) 0%, rgba(34, 30, 25, 0.55) 45%, rgba(34, 30, 25, 0.08) 78%),
+        linear-gradient(0deg, rgba(34, 30, 25, 0.55) 0%, rgba(34, 30, 25, 0) 45%);
+}
+
+.slide-content {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s ease 0.35s, transform 0.8s ease 0.35s;
+}
+
+.swiper-slide-active .slide-content {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ---------- Fabric Cards ---------- */
+.fabric-card {
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.fabric-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 50px -20px rgba(34, 30, 25, 0.3);
+}
+
+.img-layer {
+    transition: opacity 0.55s ease, transform 0.9s ease;
+}
+
+.fabric-card .img-back {
+    opacity: 0;
+    transform: scale(1.05);
+}
+
+.fabric-card:hover .img-back {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.fabric-card:hover .img-front {
+    opacity: 0;
+}
+
+/* ---------- Kumaşlar page filter items ---------- */
+.filter-item {
+    color: #5B534A;
+    transition: all 0.2s ease;
+}
+
+.filter-item:hover {
+    background: #F1EAE0;
+    color: #221E19;
+}
+
+.filter-item.active {
+    background: #B08968;
+    color: #fff;
+    font-weight: 600;
+}
+
+/* ---------- Chatbot ---------- */
+#chatbot-widget {
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+#chatbot-toggle {
+    z-index: 99;
+}
+
+#chatbot-messages {
+    max-height: 300px;
+    scrollbar-width: thin;
+}
+
+.chat-msg {
+    max-width: 85%;
+    padding: 0.55rem 0.8rem;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    border-radius: 1rem;
+    display: inline-block;
+    animation: msgIn 0.3s ease;
+}
+
+.msg-bot {
+    background: #F1EAE0;
+    color: #221E19;
+    border-bottom-left-radius: 0.35rem;
+}
+
+.msg-user {
+    background: #B08968;
+    color: #fff;
+    border-bottom-right-radius: 0.35rem;
+}
+
+@keyframes msgIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.chat-chip {
+    border: 1px solid #D2B48C;
+    color: #8C6B4F;
+    font-size: 0.72rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chat-chip:hover {
+    background: #B08968;
+    color: #fff;
+    border-color: #B08968;
+}
+
+/* Typing indicator */
+.typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #8D857B;
+    display: inline-block;
+    animation: typing 1.2s infinite;
+}
+
+.typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+
+    0%,
+    60%,
+    100% {
+        opacity: 0.3;
+        transform: translateY(0);
+    }
+
+    30% {
+        opacity: 1;
+        transform: translateY(-4px);
+    }
+}
+
+/* ---------- Scroll reveal ---------- */
+.reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ---------- Forms ---------- */
+.form-input {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid #E4DBCE;
+    border-radius: 0.75rem;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+.form-input:focus {
+    border-color: #B08968;
+    box-shadow: 0 0 0 3px rgba(176, 137, 104, 0.18);
+}
+
+/* ---------- Misc ---------- */
+.text-shadow-hero {
+    text-shadow: 0 2px 20px rgba(34, 30, 25, 0.5);
+}
+
+@media (max-width: 768px) {
+
+    .swiper-button-next,
+    .swiper-button-prev {
+        display: none;
+    }
+}

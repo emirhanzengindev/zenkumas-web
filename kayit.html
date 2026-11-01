@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hesap Oluştur | Zen Kumaş</title>
+    <meta name="description" content="Zen Kumaş hesap oluşturma.">
+    <link rel="icon" href="favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700;800&display=swap&subset=latin,latin-ext" rel="stylesheet" />
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="assets/js/theme.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body class="bg-cream text-ink min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-4xl bg-white rounded-3xl shadow-lifted overflow-hidden grid grid-cols-1 md:grid-cols-2">
+
+        <!-- Sol: Marka paneli -->
+        <div class="relative bg-ink text-cream p-10 lg:p-12 hidden md:flex flex-col justify-between">
+            <div class="absolute inset-0 opacity-20">
+                <img src="assets/images/puffy1.jpg" alt="" class="w-full h-full object-cover" />
+            </div>
+            <div class="relative">
+                <a href="index.html" class="flex items-center gap-3">
+                    <span class="w-10 h-10 rounded-full bg-cream text-ink flex items-center justify-center font-display text-xl font-bold">Z</span>
+                    <span class="font-display text-xl font-bold">ZEN <span class="text-bronze-light">KUMAŞ</span></span>
+                </a>
+            </div>
+            <div class="relative">
+                <h2 class="font-display text-3xl font-bold leading-tight">Aramıza katılın, <span class="text-bronze-light">koleksiyonlardan ilk siz haberdar olun.</span></h2>
+                <ul class="text-cream/70 text-sm mt-5 space-y-2.5">
+                    <li class="flex items-center gap-2.5"><svg class="w-4 h-4 text-bronze-light shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Hızlı teklif alma</li>
+                    <li class="flex items-center gap-2.5"><svg class="w-4 h-4 text-bronze-light shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Sipariş takibi</li>
+                    <li class="flex items-center gap-2.5"><svg class="w-4 h-4 text-bronze-light shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Kampanya haberleri</li>
+                </ul>
+            </div>
+            <p class="relative text-xs text-cream/50">© 2026 Zen Kumaş · Bursa</p>
+        </div>
+
+        <!-- Sağ: Form -->
+        <div class="p-8 lg:p-12">
+            <div class="mb-8">
+                <h1 class="font-display text-3xl font-bold">Hesap Oluştur</h1>
+                <p class="text-ink-muted text-sm mt-2">Aramıza katılmak için bilgilerinizi girin.</p>
+            </div>
+
+            <form id="register-form" class="space-y-5">
+                <div>
+                    <label for="name" class="block text-sm font-medium text-ink-soft mb-1.5">Ad Soyad</label>
+                    <input type="text" id="name" required class="form-input" placeholder="Adınız ve soyadınız">
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-ink-soft mb-1.5">E-posta</label>
+                    <input type="email" id="email" required class="form-input" placeholder="ornek@mail.com">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-ink-soft mb-1.5">Şifre</label>
+                        <input type="password" id="password" required minlength="6" class="form-input" placeholder="En az 6 karakter">
+                    </div>
+                    <div>
+                        <label for="confirm-password" class="block text-sm font-medium text-ink-soft mb-1.5">Şifre Tekrar</label>
+                        <input type="password" id="confirm-password" required minlength="6" class="form-input" placeholder="Şifrenizi tekrar girin">
+                    </div>
+                </div>
+
+                <label class="flex items-start gap-2.5 text-sm text-ink-soft cursor-pointer">
+                    <input id="terms" type="checkbox" required class="h-4 w-4 mt-0.5 rounded border-cream-dark text-bronze focus:ring-bronze/40">
+                    <span><a href="hakkimizda.html" class="font-semibold text-bronze-dark hover:text-ink underline">Kullanım koşullarını</a> ve <a href="iletisim.html" class="font-semibold text-bronze-dark hover:text-ink underline">gizlilik politikasını</a> okudum, kabul ediyorum.</span>
+                </label>
+
+                <button type="submit" class="w-full bg-ink text-cream font-semibold py-3.5 rounded-full hover:bg-bronze transition shadow-soft">
+                    Hesap Oluştur
+                </button>
+            </form>
+
+            <div class="mt-8 pt-6 border-t border-cream-dark text-center space-y-3">
+                <p class="text-sm text-ink-muted">
+                    Zaten bir hesabınız var mı?
+                    <a href="giris.html" class="font-semibold text-bronze-dark hover:text-ink transition">Giriş yap</a>
+                </p>
+                <a href="index.html" class="inline-flex items-center gap-1.5 text-sm text-ink-soft hover:text-bronze-dark transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h14"/></svg>
+                    Ana Sayfaya Dön
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Kayıt formu - demo (gerçek uygulamada sunucuya gönderilir)
+        document.getElementById('register-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            if (password !== confirmPassword) {
+                alert('Şifreler eşleşmiyor!');
+                return;
+            }
+
+            const user = {
+                id: Date.now(),
+                isim: name,
+                email: email,
+                role: 'user'
+            };
+
+            localStorage.setItem('user', JSON.stringify(user));
+            alert('Hesabınız başarıyla oluşturuldu! 🎉');
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>

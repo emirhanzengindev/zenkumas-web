@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kumaş Düzenle | Zentekstil</title>
+    <meta name="description" content="Zentekstil kumaş düzenleme">
+    
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Header -->
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-900">Kumaş Düzenle</h1>
+            <div class="flex items-center space-x-4">
+                <a href="index.html" class="text-blue-600 hover:text-blue-800">
+                    ← Yönetim Paneline Dön
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:px-6">
+                <h2 id="form-title" class="text-lg leading-6 font-medium text-gray-900">Yeni Kumaş Ekle</h2>
+            </div>
+            <div class="border-t border-gray-200">
+                <form id="fabric-form" class="px-4 py-5 sm:p-6" enctype="multipart/form-data">
+                    <input type="hidden" id="fabric-id">
+                    
+                    <div class="grid grid-cols-1 gap-6">
+                        <div>
+                            <label for="isim" class="block text-sm font-medium text-gray-700">Kumaş Adı</label>
+                            <input type="text" id="isim" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        </div>
+                        
+                        <div>
+                            <label for="tur" class="block text-sm font-medium text-gray-700">Kumaş Türü</label>
+                            <select id="tur" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                <option value="soho">Soho</option>
+                                <option value="babyface">Babyface</option>
+                                <option value="yonsuz_luna">Yönsüz Luna</option>
+                                <option value="coco">Coco</option>
+                                <option value="otto">Otto</option>
+                                <option value="anka">Anka</option>
+                                <option value="puffy">Puffy</option>
+                                <option value="zuma">Zuma</option>
+                                <option value="santa">Santa</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="aciklama" class="block text-sm font-medium text-gray-700">Açıklama</label>
+                            <textarea id="aciklama" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                        </div>
+                        
+                        <div>
+                            <label for="kartela_resmi" class="block text-sm font-medium text-gray-700">Kartela Resmi</label>
+                            <input type="file" id="kartela_resmi" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                            <img id="image-preview" src="" alt="Resim önizleme" class="mt-2 max-h-40 hidden">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Stok Durumu</label>
+                            <div class="mt-2 space-y-2">
+                                <div class="flex items-center">
+                                    <input id="stok-evet" name="stok_durumu" type="radio" value="evet" checked class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                                    <label for="stok-evet" class="ml-3 block text-sm font-medium text-gray-700">Stokta</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="stok-hayir" name="stok_durumu" type="radio" value="hayir" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                                    <label for="stok-hayir" class="ml-3 block text-sm font-medium text-gray-700">Tükendi</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const apiBase = 'https://api.zentekstil.com.tr';
+        let editingFabric = null;
+        
+        // Check if user is logged in
+        function checkAuth() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user || user.role !== 'admin') {
+                window.location.href = '../giris.html';
+                return;
+            }
+        }
+
+        // Get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(window.location.href);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Load fabric data for editing
+        async function loadFabricForEdit(id) {
+            try {
+                const response = await fetch(`${apiBase}/kumaslar/${id}`);
+                const fabric = await response.json();
+                
+                if (fabric) {
+                    editingFabric = fabric;
+                    document.getElementById('form-title').textContent = 'Kumaş Düzenle';
+                    document.getElementById('fabric-id').value = fabric.id;
+                    document.getElementById('isim').value = fabric.isim;
+                    document.getElementById('tur').value = fabric.tur || 'soho';
+                    document.getElementById('aciklama').value = fabric.aciklama || '';
+                    
+                    // Set stock status
+                    if (fabric.stok_durumu === 'evet') {
+                        document.getElementById('stok-evet').checked = true;
+                    } else {
+                        document.getElementById('stok-hayir').checked = true;
+                    }
+                    
+                    // Show image preview if exists
+                    if (fabric.kartela_resmi) {
+                        document.getElementById('image-preview').src = `${apiBase}/uploads/${fabric.kartela_resmi}`;
+                        document.getElementById('image-preview').classList.remove('hidden');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading fabric:', error);
+                alert('Kumaş bilgileri yüklenirken bir hata oluştu.');
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('fabric-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('isim', document.getElementById('isim').value);
+            formData.append('tur', document.getElementById('tur').value);
+            formData.append('aciklama', document.getElementById('aciklama').value);
+            formData.append('stok_durumu', document.querySelector('input[name="stok_durumu"]:checked').value);
+            
+            const imageFile = document.getElementById('kartela_resmi').files[0];
+            if (imageFile) {
+                formData.append('kartela_resmi', imageFile);
+            }
+            
+            try {
+                let response;
+                
+                if (editingFabric) {
+                    // Update existing fabric
+                    response = await fetch(`${apiBase}/kumaslar/${editingFabric.id}`, {
+                        method: 'PUT',
+                        body: formData
+                    });
+                } else {
+                    // Create new fabric
+                    response = await fetch(`${apiBase}/kumaslar`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                }
+                
+                if (response.ok) {
+                    alert(editingFabric ? 'Kumaş başarıyla güncellendi.' : 'Kumaş başarıyla eklendi.');
+                    window.location.href = 'index.html';
+                } else {
+                    const error = await response.json();
+                    alert(`Hata: ${error.message || 'Bir hata oluştu.'}`);
+                }
+            } catch (error) {
+                console.error('Error saving fabric:', error);
+                alert('Kumaş kaydedilirken bir hata oluştu.');
+            }
+        });
+
+        // Image preview
+        document.getElementById('kartela_resmi').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('image-preview').src = e.target.result;
+                    document.getElementById('image-preview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Initialize
+        checkAuth();
+        
+        // Check if we're editing an existing fabric
+        const fabricId = getUrlParameter('id');
+        if (fabricId) {
+            loadFabricForEdit(fabricId);
+        }
+    </script>
+</body>
+</html>

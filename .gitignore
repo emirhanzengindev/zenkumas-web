@@ -1,0 +1,13 @@
+# Yerel geliştirme yardımcıları - sitede yayına verilmez
+create-images.html
+debug-images.html
+fabric-images.html
+generate-images.html
+test-images.html
+assets/images/temp_images/
+
+# Editör / OS
+.vscode/
+Thumbs.db
+.DS_Store
+desktop.ini
