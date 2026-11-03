@@ -1,0 +1,728 @@
+/* ============================================================
+   Zen Kumaş - Yönetim Paneli Stilleri (Aşama 2)
+   Yalnızca admin sayfalarında yüklenir; assets/css/styles.css'i
+   değiştirmez. Renkler/tipler theme.js tokenlerinden gelir
+   (cream / ink / bronze).
+   ============================================================ */
+
+/* ---------- Panel iskeleti ---------- */
+.admin-shell {
+    min-height: 100vh;
+    background: #FAF7F1; /* cream */
+    display: flex;
+}
+
+.admin-sidebar {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 17.5rem;
+    background: #221E19; /* ink */
+    color: #FAF7F1;
+    display: flex;
+    flex-direction: column;
+    z-index: 60;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+}
+
+.admin-sidebar.open {
+    transform: translateX(0);
+}
+
+@media (min-width: 1024px) {
+    .admin-sidebar {
+        transform: translateX(0);
+    }
+    .admin-main {
+        margin-left: 17.5rem;
+    }
+}
+
+.admin-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(34, 30, 25, 0.45);
+    z-index: 55;
+}
+
+/* ---------- Menü linkleri ---------- */
+.admin-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: rgba(250, 247, 241, 0.65);
+    border-inline-start: 3px solid transparent;
+    transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.admin-nav-link:hover {
+    color: #FAF7F1;
+    background: rgba(250, 247, 241, 0.05);
+}
+
+.admin-nav-link.active {
+    color: #FAF7F1;
+    background: rgba(176, 137, 104, 0.16); /* bronze/20 */
+    border-inline-start-color: #B08968;   /* bronze */
+}
+
+.admin-logout {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border-radius: 0.6rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #F1EAE0; /* cream-dark */
+    background: rgba(250, 247, 241, 0.07);
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.admin-logout:hover {
+    background: rgba(176, 137, 104, 0.35);
+    color: #fff;
+}
+
+/* ---------- Üst bar (mobil) ---------- */
+.admin-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-inline: 1rem;
+    background: rgba(250, 247, 241, 0.9);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid #F1EAE0;
+}
+
+@media (min-width: 1024px) {
+    .admin-topbar .admin-menu-toggle {
+        display: none;
+    }
+}
+
+.admin-menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.6rem;
+    color: #221E19;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(34, 30, 25, 0.08);
+}
+
+/* ---------- Yüzeyler ---------- */
+.admin-card {
+    background: #fff;
+    border: 1px solid #F1EAE0;
+    border-radius: 1rem;
+    box-shadow: 0 1px 3px rgba(34, 30, 25, 0.06);
+}
+
+.admin-stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #221E19;
+    line-height: 1.1;
+}
+
+/* ---------- Form elemanları ---------- */
+.admin-input,
+.admin-select,
+.admin-textarea {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid #E5DCCB;
+    border-radius: 0.7rem;
+    background: #fff;
+    color: #221E19;
+    font-size: 0.925rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-input:focus,
+.admin-select:focus,
+.admin-textarea:focus {
+    outline: none;
+    border-color: #B08968;
+    box-shadow: 0 0 0 3px rgba(176, 137, 104, 0.18);
+}
+
+.admin-label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #5B534A; /* ink-soft */
+    margin-bottom: 0.4rem;
+}
+
+.admin-field-error {
+    display: block;
+    font-size: 0.75rem;
+    color: #B3261E;
+    margin-top: 0.35rem;
+    min-height: 1rem;
+}
+
+/* ---------- Butonlar ---------- */
+.admin-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.4rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+    border: 1px solid transparent;
+}
+
+.admin-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.admin-btn--primary {
+    background: #221E19; /* ink */
+    color: #FAF7F1;
+}
+
+.admin-btn--primary:hover:not(:disabled) {
+    background: #B08968; /* bronze */
+}
+
+.admin-btn--secondary {
+    background: #fff;
+    color: #5B534A;
+    border-color: #E5DCCB;
+}
+
+.admin-btn--secondary:hover:not(:disabled) {
+    border-color: #B08968;
+    color: #8C6B4F; /* bronze-dark */
+}
+
+/* ---------- Durum rozetleri ---------- */
+.admin-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.7rem;
+    border-radius: 9999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.admin-badge::before {
+    content: '';
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 9999px;
+    background: currentColor;
+}
+
+.admin-badge--live {
+    background: rgba(74, 124, 89, 0.12);
+    color: #3E6B4A;
+}
+
+.admin-badge--draft {
+    background: rgba(143, 128, 108, 0.16);
+    color: #6B5F50;
+}
+
+/* ---------- Bildirim (toast) ---------- */
+.zen-toast {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 100;
+    max-width: min(24rem, calc(100vw - 2.5rem));
+    padding: 0.85rem 1.2rem;
+    border-radius: 0.8rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(34, 30, 25, 0.18);
+    opacity: 0;
+    transform: translateY(-0.6rem);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.zen-toast.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.zen-toast--success { background: #3E6B4A; }
+.zen-toast--error   { background: #A63D2F; }
+.zen-toast--info    { background: #5B534A; }
+
+/* ---------- Yükleniyor ---------- */
+.admin-spinner {
+    width: 1.1rem;
+    height: 1.1rem;
+    border: 2px solid rgba(250, 247, 241, 0.35);
+    border-top-color: #FAF7F1;
+    border-radius: 9999px;
+    animation: zen-spin 0.7s linear infinite;
+    display: inline-block;
+}
+
+.admin-spinner--dark {
+    border-color: rgba(34, 30, 25, 0.2);
+    border-top-color: #221E19;
+}
+
+@keyframes zen-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ---------- Giriş ekranı ---------- */
+.admin-login-body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: #FAF7F1;
+}
+
+/* ---------- Filtre çubuğu ---------- */
+.admin-filters {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+    .admin-filters {
+        grid-template-columns: 2fr 1.4fr 1.2fr auto;
+        align-items: end;
+    }
+}
+
+/* ---------- Tablo ---------- */
+.admin-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.admin-table thead th {
+    text-align: left;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #8D857B; /* ink-muted */
+    font-weight: 600;
+    padding: 0.85rem 1rem;
+    background: #FBF9F5;
+    border-bottom: 1px solid #F1EAE0;
+    white-space: nowrap;
+}
+
+.admin-table tbody td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid #F1EAE0;
+    color: #5B534A;
+    vertical-align: middle;
+}
+
+.admin-table tbody tr:hover {
+    background: #FBF9F5;
+}
+
+.admin-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 0.6rem;
+    object-fit: cover;
+    background: #F1EAE0;
+    flex-shrink: 0;
+}
+
+.admin-thumb--empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8D857B;
+}
+
+/* ---------- Eylem butonları ---------- */
+.admin-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+}
+
+.admin-iconbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.7rem;
+    border-radius: 0.55rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid #E5DCCB;
+    background: #fff;
+    color: #5B534A;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+    white-space: nowrap;
+}
+
+.admin-iconbtn:hover:not(:disabled) {
+    border-color: #B08968;
+    color: #8C6B4F;
+}
+
+.admin-iconbtn--danger:hover:not(:disabled) {
+    border-color: #A63D2F;
+    color: #A63D2F;
+    background: #FBEDEA;
+}
+
+.admin-iconbtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ---------- Sayfalama ---------- */
+.admin-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding-top: 1rem;
+    margin-top: 0.25rem;
+}
+
+.admin-pagination__info {
+    font-size: 0.8rem;
+    color: #8D857B;
+}
+
+/* ---------- Onay modal ---------- */
+.admin-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    background: rgba(34, 30, 25, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+}
+
+.admin-modal-backdrop.open { opacity: 1; }
+
+.admin-modal {
+    width: 100%;
+    max-width: 30rem;
+    background: #fff;
+    border-radius: 1.1rem;
+    box-shadow: 0 20px 60px rgba(34, 30, 25, 0.3);
+    padding: 1.5rem;
+    transform: translateY(8px) scale(0.98);
+    transition: transform 0.18s ease;
+}
+
+.admin-modal-backdrop.open .admin-modal { transform: none; }
+
+.admin-modal__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #221E19;
+    margin-bottom: 0.5rem;
+}
+
+.admin-modal__danger-accent { color: #A63D2F; }
+
+/* ---------- Form ızgarası ---------- */
+.admin-form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.1rem;
+}
+
+@media (min-width: 640px) {
+    .admin-form-grid { grid-template-columns: 1fr 1fr; }
+    .admin-form-grid .admin-span-2 { grid-column: 1 / -1; }
+}
+
+/* ---------- Okunabilir fotoğraf ızgarası (Aşama 4'te düzenlenebilir) ---------- */
+.admin-photo-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    gap: 0.6rem;
+}
+
+.admin-photo-cell {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 0.7rem;
+    overflow: hidden;
+    border: 1px solid #F1EAE0;
+    background: #FBF9F5;
+}
+
+.admin-photo-cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-photo-cell__primary {
+    position: absolute;
+    top: 0.3rem;
+    left: 0.3rem;
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 0.1rem 0.4rem;
+    border-radius: 9999px;
+    background: #221E19;
+    color: #FAF7F1;
+}
+
+/* ---------- Durum bandı ---------- */
+.admin-status-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* iskelet (yükleniyor) satırı */
+.admin-skeleton {
+    height: 0.85rem;
+    border-radius: 0.4rem;
+    background: linear-gradient(90deg, #F1EAE0 25%, #F7F2EA 50%, #F1EAE0 75%);
+    background-size: 200% 100%;
+    animation: zen-shimmer 1.2s infinite;
+    display: inline-block;
+}
+
+@keyframes zen-shimmer {
+    to { background-position: -200% 0; }
+}
+
+/* ---------- Aşama 4: fotoğraf kartı eylemleri ---------- */
+.admin-photo-cell--primary {
+    border-color: #B08968;
+    box-shadow: 0 0 0 1px rgba(176, 137, 104, 0.35);
+}
+
+.admin-photo-cell--busy {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.admin-photo-cell__actions {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    gap: 0.25rem;
+    justify-content: center;
+    padding: 0.35rem 0.25rem;
+    background: linear-gradient(to top, rgba(34, 30, 25, 0.6), rgba(34, 30, 25, 0));
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.admin-photo-cell:hover .admin-photo-cell__actions,
+.admin-photo-cell:focus-within .admin-photo-cell__actions {
+    opacity: 1;
+}
+
+@media (hover: none) {
+    .admin-photo-cell__actions { opacity: 1; }
+}
+
+.admin-photobtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 0.55rem;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.92);
+    color: #5B534A;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.admin-photobtn:hover {
+    border-color: #B08968;
+    color: #8C6B4F;
+}
+
+.admin-photobtn--danger:hover {
+    border-color: #A63D2F;
+    color: #A63D2F;
+    background: #FBEDEA;
+}
+
+/* ---------- Aşama 4: sürükle-bırak alanı ---------- */
+.admin-dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    border: 1.5px dashed #D8CCB8;
+    border-radius: 0.9rem;
+    background: #FBF9F5;
+    color: #8D857B;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.admin-dropzone:hover, .admin-dropzone:focus-visible {
+    border-color: #B08968;
+    color: #8C6B4F;
+    outline: none;
+}
+
+.admin-dropzone--drag {
+    border-color: #B08968;
+    background: rgba(176, 137, 104, 0.1);
+    color: #8C6B4F;
+}
+
+.admin-dropzone--disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.admin-dropzone__title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #5B534A;
+}
+
+.admin-dropzone__hint {
+    font-size: 0.72rem;
+    color: #8D857B;
+}
+
+/* ---------- Aşama 4: yükleme öncesi önizlemeler ---------- */
+.admin-photo-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 0.6rem;
+}
+
+.admin-photo-preview__cell {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    border-radius: 0.65rem;
+    overflow: hidden;
+    border: 1px solid #F1EAE0;
+    background: #FBF9F5;
+}
+
+.admin-photo-preview__cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-photo-preview__remove {
+    position: absolute;
+    top: 0.2rem;
+    right: 0.2rem;
+    width: 1.3rem;
+    height: 1.3rem;
+    border-radius: 9999px;
+    border: none;
+    background: rgba(34, 30, 25, 0.7);
+    color: #FAF7F1;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-photo-preview__remove:hover { background: #A63D2F; }
+
+.admin-photo-preview__meta {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0.15rem 0.3rem;
+    font-size: 0.6rem;
+    text-align: center;
+    color: #FAF7F1;
+    background: rgba(34, 30, 25, 0.5);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---------- Aşama 4: yükleme ilerlemesi ---------- */
+.admin-photo-progress {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.admin-photo-progress__track {
+    flex: 1;
+    height: 0.55rem;
+    border-radius: 9999px;
+    background: #F1EAE0;
+    overflow: hidden;
+}
+
+.admin-photo-progress__bar {
+    height: 100%;
+    width: 0;
+    border-radius: 9999px;
+    background: #B08968;
+    transition: width 0.15s ease;
+}
+
+.admin-photo-progress__text {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #5B534A;
+    min-width: 3ch;
+    text-align: right;
+}

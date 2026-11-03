@@ -80,31 +80,35 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h14"/></svg>
                     Ana Sayfaya Dön
                 </a>
+                <p class="text-xs text-ink-muted">
+                    Yönetici misiniz? <a href="admin/giris.html" class="font-medium text-ink-soft hover:text-bronze-dark transition">Yönetim paneli girişi</a>
+                </p>
             </div>
         </div>
     </div>
 
     <script>
-        // Giriş formu - demo doğrulama (gerçek uygulamada sunucuya gönderilir)
+        // Giriş formu - müşteri demo doğrulaması (gerçek uygulamada sunucuya gönderilir).
+        // YÖNETİCİ GİRİŞİ BURADA DEĞİLDİR: admin paneli yalnızca admin/giris.html
+        // üzerinden gerçek backend login (POST /api/admin/login + JWT) ile açılır.
+        // Eski hardcoded admin e-posta/şifre doğrulaması güvenlik gereği kaldırıldı.
         document.getElementById('login-form').addEventListener('submit', function (e) {
             e.preventDefault();
 
-            const email = document.getElementById('email').value;
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
 
-            if (email === 'admin@zentekstil.com.tr' && password === 'admin123') {
-                localStorage.setItem('user', JSON.stringify({
-                    id: 1, isim: 'Admin', email: email, role: 'admin'
-                }));
-                window.location.href = 'admin/index.html';
-            } else {
-                const user = JSON.parse(localStorage.getItem('user'));
-                if (user && user.email === email) {
-                    window.location.href = 'index.html';
-                } else {
-                    alert('Geçersiz e-posta veya şifre!');
-                }
+            if (!email || !password) {
+                alert('E-posta ve şifrenizi giriniz.');
+                return;
             }
+
+            // Demo: giriş bilgileri sunucuya gönderilmez; panelde oturum
+            // sahte 'user' verisiyle DEĞİL, yalnızca backend JWT token'ıyla açılır.
+            localStorage.setItem('user', JSON.stringify({
+                isim: 'Müşteri', email: email
+            }));
+            window.location.href = 'index.html';
         });
     </script>
 </body>

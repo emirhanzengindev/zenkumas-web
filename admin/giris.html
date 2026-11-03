@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yönetici Girişi | Zen Kumaş</title>
+    <meta name="description" content="Zen Kumaş yönetim paneli yönetici girişi.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="../favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700;800&display=swap&subset=latin,latin-ext" rel="stylesheet" />
+
+    <!-- Tailwind + tema tokenları (site ile aynı tasarım dili) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../assets/js/theme.js"></script>
+
+    <link rel="stylesheet" href="../assets/css/admin.css" />
+</head>
+<body class="admin-login-body bg-cream text-ink" data-admin-page="login">
+
+    <div class="w-full max-w-4xl bg-white rounded-3xl shadow-lifted overflow-hidden grid grid-cols-1 md:grid-cols-2">
+
+        <!-- Sol: Marka paneli -->
+        <div class="relative bg-ink text-cream p-10 lg:p-12 hidden md:flex flex-col justify-between">
+            <div class="absolute inset-0 opacity-20">
+                <img src="../assets/images/babyface2.jpg" alt="" class="w-full h-full object-cover" />
+            </div>
+            <div class="relative">
+                <a href="../index.html" class="flex items-center gap-3">
+                    <span class="w-10 h-10 rounded-full bg-cream text-ink flex items-center justify-center font-display text-xl font-bold">Z</span>
+                    <span class="font-display text-xl font-bold">ZEN <span class="text-bronze-light">KUMAŞ</span></span>
+                </a>
+            </div>
+            <div class="relative">
+                <h2 class="font-display text-3xl font-bold leading-tight">Kumaş ürünlerinizi <span class="text-bronze-light">tek panelden</span> yönetin.</h2>
+                <p class="text-cream/70 text-sm mt-4 leading-relaxed">Ürün ekleyin, düzenleyin, fotoğraflarını yönetin ve vitrin yayınınu kontrol edin.</p>
+            </div>
+            <p class="relative text-xs text-cream/50">Yetkisiz erişim girişimleri kaydedilir · © 2026 Zen Kumaş</p>
+        </div>
+
+        <!-- Sağ: Giriş formu -->
+        <div class="p-8 lg:p-12">
+            <div class="mb-8">
+                <p class="text-xs font-semibold tracking-widest uppercase text-bronze-dark mb-2">Yönetim Paneli</p>
+                <h1 class="font-display text-3xl font-bold">Yönetici Girişi</h1>
+                <p class="text-ink-muted text-sm mt-2">Hesabınız yalnızca sunucuda tanımlı yöneticiler içindir. Açık kayıt yoktur.</p>
+            </div>
+
+            <form id="admin-login-form" class="space-y-5" novalidate>
+                <div>
+                    <label for="email" class="admin-label">E-posta</label>
+                    <input type="email" id="email" name="email" required autocomplete="username"
+                           placeholder="yonetici@sirketiniz.com" class="admin-input">
+                    <span class="admin-field-error" data-error-for="email"></span>
+                </div>
+
+                <div>
+                    <label for="password" class="admin-label">Şifre</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password"
+                           placeholder="••••••••" class="admin-input">
+                    <span class="admin-field-error" data-error-for="password"></span>
+                </div>
+
+                <p id="login-error" class="hidden text-sm text-red-700 bg-red-50 border border-red-100 rounded-lg px-4 py-3" role="alert"></p>
+
+                <button type="submit" id="login-submit"
+                        class="admin-btn admin-btn--primary w-full !py-3.5">
+                    <span data-btn-label>Giriş Yap</span>
+                </button>
+            </form>
+
+            <div class="mt-8 pt-6 border-t border-cream-dark text-center">
+                <a href="../index.html" class="inline-flex items-center gap-1.5 text-sm text-ink-soft hover:text-bronze-dark transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16l-4-4m0 0l4-4m-4 4h14"/></svg>
+                    Ana Sayfaya Dön
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/admin.js"></script>
+    <script>
+        // Yönetici girişi: gerçek backend sözleşmesi → POST /api/admin/login
+        // Body: { email, password } (JSON). Başarı: { message, admin:{id,email}, token }.
+        // Token yalnızca sessionStorage'a yazılır; URL'e ve console'a asla basılmaz.
+        (function () {
+            'use strict';
+            const form = document.getElementById('admin-login-form');
+            const errBox = document.getElementById('login-error');
+            const btn = document.getElementById('login-submit');
+            const btnLabel = btn.querySelector('[data-btn-label]');
+
+            function setBusy(busy) {
+                btn.disabled = busy;
+                if (busy) {
+                    btnLabel.textContent = '';
+                    const s = document.createElement('span');
+                    s.className = 'admin-spinner';
+                    btn.prepend(s);
+                    btnLabel.textContent = 'Giriş yapılıyor…';
+                    btn.appendChild(btnLabel);
+                } else {
+                    btn.querySelector('.admin-spinner')?.remove();
+                    btnLabel.textContent = 'Giriş Yap';
+                }
+            }
+
+            function show_error(message) {
+                errBox.textContent = message;
+                errBox.classList.remove('hidden');
+            }
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                errBox.classList.add('hidden');
+                document.querySelectorAll('[data-error-for]').forEach((el) => (el.textContent = ''));
+
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+
+                // İstemci ön doğrulaması (asıl doğrulama backend'de)
+                let invalid = false;
+                if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    document.querySelector('[data-error-for="email"]').textContent = 'Geçerli bir e-posta adresi giriniz.';
+                    invalid = true;
+                }
+                if (!password) {
+                    document.querySelector('[data-error-for="password"]').textContent = 'Şifre boş olamaz.';
+                    invalid = true;
+                }
+                if (invalid) return;
+
+                setBusy(true);
+                try {
+                    await window.zenAdmin.login(email, password);
+                    window.location.href = 'index.html';
+                } catch (err) {
+                    setBusy(false);
+                    // 400 alan hatalarını alan altına, geneli kutuya yaz
+                    if (err.data && Array.isArray(err.data.errors) && err.data.errors.length) {
+                        err.data.errors.forEach((ferr) => {
+                            const slot = document.querySelector('[data-error-for="' + ferr.path + '"]');
+                            if (slot) slot.textContent = ferr.msg;
+                        });
+                        show_error('Girdiğiniz bilgileri kontrol edin.');
+                    } else {
+                        show_error(err.message || 'Giriş yapılamadı. Lütfen tekrar deneyin.');
+                    }
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

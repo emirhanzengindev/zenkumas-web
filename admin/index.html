@@ -3,167 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yönetim Paneli | Zentekstil</title>
-    <meta name="description" content="Zentekstil admin paneli">
-    
-    <!-- Tailwind -->
+    <title>Genel Bakış | Zen Kumaş Yönetim</title>
+    <meta name="description" content="Zen Kumaş yönetim paneli genel bakış.">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" href="../favicon.ico" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700;800&display=swap&subset=latin,latin-ext" rel="stylesheet" />
+
+    <!-- Tailwind + tema tokenları -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../assets/js/theme.js"></script>
+
+    <link rel="stylesheet" href="../assets/css/admin.css" />
 </head>
-<body class="bg-gray-100">
-    <!-- Header -->
-    <header class="bg-white shadow">
-        <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-gray-900">Yönetim Paneli</h1>
-            <div class="flex items-center space-x-4">
-                <span id="admin-name" class="text-gray-700"></span>
-                <button onclick="logout()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">
-                    Çıkış Yap
+<body class="bg-cream text-ink" data-admin-page="dashboard" data-admin-nav="dashboard">
+
+    <div id="admin-layout"></div>
+
+    <div class="admin-main flex-1 min-w-0">
+        <!-- Üst bar -->
+        <header class="admin-topbar">
+            <div class="flex items-center gap-3 min-w-0">
+                <button type="button" id="admin-menu-toggle" class="admin-menu-toggle" aria-label="Menüyü aç">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
+                <h1 class="font-display text-lg font-bold truncate">Genel Bakış</h1>
             </div>
-        </div>
-    </header>
+            <a href="urun-duzenle.html" class="admin-btn admin-btn--primary hidden sm:inline-flex !py-2 !px-4 text-sm">
+                + Yeni Ürün
+            </a>
+        </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h3 class="text-lg font-medium text-gray-900 mb-2">Toplam Kumaş</h3>
-                <p id="total-fabrics" class="text-3xl font-bold text-blue-600">0</p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h3 class="text-lg font-medium text-gray-900 mb-2">Stoktaki Kumaş</h3>
-                <p id="in-stock" class="text-3xl font-bold text-green-600">0</p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h3 class="text-lg font-medium text-gray-900 mb-2">Tükenen Kumaş</h3>
-                <p id="out-of-stock" class="text-3xl font-bold text-red-600">0</p>
-            </div>
-        </div>
+        <main class="p-4 sm:p-6 lg:p-8 space-y-6">
 
-        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-            <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
-                <h2 class="text-lg leading-6 font-medium text-gray-900">Kumaş Listesi</h2>
-                <a href="duzenle.html" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-                    Yeni Kumaş Ekle
+            <!-- Sayaç kartları -->
+            <section class="grid grid-cols-1 sm:grid-cols-3 gap-4" aria-label="Ürün sayıları">
+                <div class="admin-card p-5">
+                    <p class="text-sm text-ink-muted mb-1">Toplam Ürün</p>
+                    <p class="admin-stat-value" id="stat-total">
+                        <span class="admin-spinner admin-spinner--dark" data-loading></span>
+                    </p>
+                </div>
+                <div class="admin-card p-5">
+                    <p class="text-sm text-ink-muted mb-1">Yayındaki</p>
+                    <p class="admin-stat-value text-[#3E6B4A]" id="stat-published">
+                        <span class="admin-spinner admin-spinner--dark" data-loading></span>
+                    </p>
+                </div>
+                <div class="admin-card p-5">
+                    <p class="text-sm text-ink-muted mb-1">Taslak</p>
+                    <p class="admin-stat-value text-ink-soft" id="stat-draft">
+                        <span class="admin-spinner admin-spinner--dark" data-loading></span>
+                    </p>
+                </div>
+            </section>
+
+            <!-- Hızlı işlemler -->
+            <section class="grid grid-cols-1 sm:grid-cols-2 gap-4" aria-label="Hızlı işlemler">
+                <a href="urun-duzenle.html" class="admin-card p-5 flex items-center gap-4 hover:border-bronze transition">
+                    <span class="w-11 h-11 rounded-full bg-bronze/15 text-bronze-dark flex items-center justify-center text-xl">+</span>
+                    <span>
+                        <span class="block font-semibold text-ink">Yeni Ürün Ekle</span>
+                        <span class="block text-sm text-ink-muted">Kumaşınızı taslak olarak oluşturun, fotoğraflarını ekleyin.</span>
+                    </span>
                 </a>
-            </div>
-            <div class="border-t border-gray-200">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kumaş Adı</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tür</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stok Durumu</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
-                        </tr>
-                    </thead>
-                    <tbody id="fabrics-table-body" class="bg-white divide-y divide-gray-200">
-                        <!-- Fabric data will be loaded here -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
+                <a href="urunler.html" class="admin-card p-5 flex items-center gap-4 hover:border-bronze transition">
+                    <span class="w-11 h-11 rounded-full bg-bronze/15 text-bronze-dark flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h10"/></svg>
+                    </span>
+                    <span>
+                        <span class="block font-semibold text-ink">Ürünleri Yönet</span>
+                        <span class="block text-sm text-ink-muted">Listeleme, arama, düzenleme ve yayın kontrolü.</span>
+                    </span>
+                </a>
+            </section>
 
+            <!-- Son eklenenler (salt okuma; tam liste yönetimi Aşama 3) -->
+            <section class="admin-card" aria-label="Son eklenen ürünler">
+                <div class="px-5 py-4 border-b border-cream-dark flex items-center justify-between">
+                    <h2 class="font-semibold text-ink">Son Eklenen Ürünler</h2>
+                    <a href="urunler.html" class="text-sm font-medium text-bronze-dark hover:text-ink transition">Tümünü gör →</a>
+                </div>
+                <div id="recent-list" class="p-5">
+                    <p class="text-sm text-ink-muted flex items-center gap-2">
+                        <span class="admin-spinner admin-spinner--dark"></span> Ürünler yükleniyor…
+                    </p>
+                </div>
+            </section>
+
+            <p class="text-xs text-ink-muted">Not: Ürün listeleme, ekleme/düzenleme ve fotoğraf yönetimi bir sonraki aşamada panele eklenecektir.</p>
+        </main>
+    </div>
+
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/admin.js"></script>
     <script>
-        const apiBase = 'https://api.zentekstil.com.tr';
-        
-        // Check if user is logged in
-        function checkAuth() {
-            const user = JSON.parse(localStorage.getItem('user'));
-            if (!user || user.role !== 'admin') {
-                window.location.href = '../giris.html';
-                return;
-            }
-            
-            document.getElementById('admin-name').textContent = user.isim;
-        }
+        // Genel bakış sayaçları — YALNIZCA salt okuma uçları:
+        //   GET /api/admin/kumaslar?limit=1        → toplam kayıt
+        //   GET /api/admin/kumaslar?yayinda=true   → yayındaki sayısı
+        //   GET /api/admin/kumaslar?yayinda=false  → taslak sayısı
+        // Ürün yönetimi ekranları Aşama 3'tedir.
+        (function () {
+            'use strict';
 
-        // Logout function
-        function logout() {
-            localStorage.removeItem('user');
-            window.location.href = '../index.html';
-        }
-
-        // Load fabrics
-        async function loadFabrics() {
-            try {
-                const response = await fetch(`${apiBase}/kumaslar`);
-                const fabrics = await response.json();
-                
-                // Update statistics
-                document.getElementById('total-fabrics').textContent = fabrics.length;
-                
-                const inStock = fabrics.filter(f => f.stok_durumu === 'evet').length;
-                const outOfStock = fabrics.length - inStock;
-                
-                document.getElementById('in-stock').textContent = inStock;
-                document.getElementById('out-of-stock').textContent = outOfStock;
-                
-                // Populate table
-                const tableBody = document.getElementById('fabrics-table-body');
-                tableBody.innerHTML = '';
-                
-                fabrics.forEach(fabric => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0 h-10 w-10">
-                                    <img class="h-10 w-10 rounded-full" src="${apiBase}/uploads/${fabric.kartela_resmi}" alt="${fabric.isim}">
-                                </div>
-                                <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">${fabric.isim}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            ${fabric.tur || 'Belirtilmemiş'}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                ${fabric.stok_durumu === 'evet' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
-                                ${fabric.stok_durumu === 'evet' ? 'Stokta' : 'Tükendi'}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <a href="duzenle.html?id=${fabric.id}" class="text-blue-600 hover:text-blue-900 mr-3">Düzenle</a>
-                            <button onclick="deleteFabric(${fabric.id})" class="text-red-600 hover:text-red-900">Sil</button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error loading fabrics:', error);
-                alert('Kumaşlar yüklenirken bir hata oluştu.');
+            function setStat(el, value) {
+                el.textContent = value == null ? '—' : String(value);
             }
-        }
 
-        // Delete fabric
-        async function deleteFabric(id) {
-            if (!confirm('Bu kumaşı silmek istediğinize emin misiniz?')) {
-                return;
-            }
-            
-            try {
-                const response = await fetch(`${apiBase}/kumaslar/${id}`, {
-                    method: 'DELETE'
-                });
-                
-                if (response.ok) {
-                    alert('Kumaş başarıyla silindi.');
-                    loadFabrics(); // Refresh the list
-                } else {
-                    alert('Kumaş silinirken bir hata oluştu.');
+            async function loadCounts() {
+                try {
+                    const [all, yayin, taslak] = await Promise.all([
+                        window.zenAdmin.apiGetIfAuthed('/api/admin/kumaslar?limit=1'),
+                        window.zenAdmin.apiGetIfAuthed('/api/admin/kumaslar?yayinda=true&limit=1'),
+                        window.zenAdmin.apiGetIfAuthed('/api/admin/kumaslar?yayinda=false&limit=1'),
+                    ]);
+                    setStat(document.getElementById('stat-total'), all && all.toplam);
+                    setStat(document.getElementById('stat-published'), yayin && yayin.toplam);
+                    setStat(document.getElementById('stat-draft'), taslak && taslak.toplam);
+                } catch (err) {
+                    document.querySelectorAll('[data-loading]').forEach((el) => el.remove());
+                    window.zenToast(err.message || 'Sayılar alınamadı.', 'error');
                 }
-            } catch (error) {
-                console.error('Error deleting fabric:', error);
-                alert('Kumaş silinirken bir hata oluştu.');
             }
-        }
 
-        // Initialize
-        checkAuth();
-        loadFabrics();
+            async function loadRecent() {
+                const box = document.getElementById('recent-list');
+                try {
+                    const data = await window.zenAdmin.apiGetIfAuthed('/api/admin/kumaslar?limit=5');
+                    const kayitlar = (data && data.kayitlar) || [];
+                    if (!kayitlar.length) {
+                        box.innerHTML = '<p class="text-sm text-ink-muted">Henüz ürün eklenmemiş. İlk ürününüzü "Yeni Ürün Ekle" ile oluşturabilirsiniz.</p>';
+                        return;
+                    }
+                    // Alanlar textContent ile yazılır (innerHTML'e ham veri girmez → XSS yüzeyi yok).
+                    box.innerHTML = '';
+                    const ul = document.createElement('ul');
+                    ul.className = 'divide-y divide-cream-dark';
+                    kayitlar.forEach((k) => {
+                        const li = document.createElement('li');
+                        li.className = 'py-3 flex items-center gap-4';
+
+                        const img = document.createElement('img');
+                        img.className = 'w-10 h-10 rounded-lg object-cover bg-cream shrink-0';
+                        if (k.ana_foto_url) img.src = k.ana_foto_url;
+                        img.alt = '';
+
+                        const name = document.createElement('p');
+                        name.className = 'text-sm font-medium text-ink truncate flex-1';
+                        name.textContent = k.kumas_adi || '(isimsiz)';
+
+                        const badge = document.createElement('span');
+                        badge.className = 'admin-badge ' + (k.yayinda ? 'admin-badge--live' : 'admin-badge--draft');
+                        badge.textContent = k.yayinda ? 'Yayında' : 'Taslak';
+
+                        li.append(img, name, badge);
+                        ul.appendChild(li);
+                    });
+                    box.appendChild(ul);
+                } catch (err) {
+                    box.innerHTML = '<p class="text-sm text-red-700">Ürünler yüklenemedi.</p>';
+                }
+            }
+
+            loadCounts();
+            loadRecent();
+        })();
     </script>
 </body>
 </html>

@@ -1,0 +1,6 @@
+# Zen Kumaş — arama motoru yapılandırması
+# Yönetim paneli ve hesap sayfaları indekslenmez.
+User-agent: *
+Disallow: /admin/
+Disallow: /giris.html
+Disallow: /kayit.html
