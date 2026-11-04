@@ -33,6 +33,7 @@
         fiyat: document.getElementById('f-fiyat'),
         stok: document.getElementById('f-stok'),
         aciklama: document.getElementById('f-aciklama'),
+        sira: document.getElementById('f-sira'),
     };
     const saveBtn = document.getElementById('btn-save');
     const statusStrip = document.getElementById('status-strip');
@@ -77,6 +78,11 @@
             const n = Number(stok);
             if (!Number.isInteger(n) || n < 0) { fieldError(F.stok, 'Stok tam sayı ve 0 veya üzeri olmalı.'); ok = false; }
         }
+        const sira = F.sira.value.trim();
+        if (sira !== '') {
+            const n = Number(sira);
+            if (!Number.isInteger(n) || n < 0) { fieldError(F.sira, 'Sıra tam sayı ve 0 veya üzeri olmalı.'); ok = false; }
+        }
         return ok;
     }
 
@@ -95,6 +101,9 @@
         if (normNum(F.stok.value.trim()) !== normNum(initial.stok)) {
             p.kumas_stok = F.stok.value.trim() === '' ? null : Number(F.stok.value.trim());
         }
+        // Sıra: yalnız doluysa ve değiştiyse gönder (boş bırakılışsa dokunulmaz).
+        const siraVal = F.sira.value.trim();
+        if (siraVal !== '' && normNum(siraVal) !== normNum(initial.sira)) p.sira = Number(siraVal);
         return p;
     }
 
@@ -107,6 +116,7 @@
             fiyat: k.kumas_fiyat === null || k.kumas_fiyat === undefined ? '' : String(k.kumas_fiyat),
             stok: k.kumas_stok === null || k.kumas_stok === undefined ? '' : String(k.kumas_stok),
             aciklama: k.kumas_aciklama || '',
+            sira: k.sira === null || k.sira === undefined ? '' : String(k.sira),
         };
     }
 
@@ -114,6 +124,7 @@
         const s = snapshot(k);
         F.adi.value = s.adi; F.kategori.value = s.kategori; F.renk.value = s.renk;
         F.fiyat.value = s.fiyat; F.stok.value = s.stok; F.aciklama.value = s.aciklama;
+        F.sira.value = s.sira;
         initial = s;
         published = !!k.yayinda;
         currentName = k.kumas_adi || '';
@@ -164,6 +175,7 @@
         if (F.renk.value.trim()) data.kumas_renk = F.renk.value.trim();
         if (F.stok.value.trim() !== '') data.kumas_stok = Number(F.stok.value.trim());
         if (F.aciklama.value.trim()) data.kumas_aciklama = F.aciklama.value.trim();
+        if (F.sira.value.trim() !== '') data.sira = Number(F.sira.value.trim());
 
         try {
             const res = await zenApi('/api/admin/kumaslar', { method: 'POST', body: data });
@@ -200,7 +212,7 @@
         clearErrors();
         const errors = err && err.data && Array.isArray(err.data.errors) ? err.data.errors : null;
         if (errors && errors.length) {
-            const map = { kumas_adi: F.adi, kumas_kategori: F.kategori, kumas_renk: F.renk, kumas_fiyat: F.fiyat, kumas_stok: F.stok, kumas_aciklama: F.aciklama };
+            const map = { kumas_adi: F.adi, kumas_kategori: F.kategori, kumas_renk: F.renk, kumas_fiyat: F.fiyat, kumas_stok: F.stok, kumas_aciklama: F.aciklama, sira: F.sira };
             const seen = {};
             errors.forEach((e) => { const el = map[e.path]; if (el && !seen[e.path]) { seen[e.path] = 1; fieldError(el, e.msg || 'Geçersiz değer.'); } });
             toast('Kayıt reddedildi: işaretli alanları kontrol edin.', 'error');
@@ -259,7 +271,7 @@
 
         if (!isEdit) {
             // Başlangıç durumu: taslak (yayında değil) — fotoğraf yok
-            initial = { adi: '', kategori: '', renk: '', fiyat: '', stok: '', aciklama: '' };
+            initial = { adi: '', kategori: '', renk: '', fiyat: '', stok: '', aciklama: '', sira: '' };
             const draft = document.getElementById('create-hint');
             if (draft) draft.classList.remove('hidden');
             return;

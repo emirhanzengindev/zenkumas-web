@@ -16,7 +16,7 @@
     const zen = window.zenAdmin;
     const esc = window.zenEscapeHtml;
 
-    const PAGE_SIZE = 10;
+    const PAGE_SIZE = 50;
     const state = { q: '', kategori: '', yayinda: '', limit: PAGE_SIZE, offset: 0 };
 
     let tbody, emptyBox, errBox, paginationEl, countEl, categoriesEl;

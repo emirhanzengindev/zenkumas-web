@@ -48,15 +48,23 @@ function safeImg(url) {
 // Backend ürününü kart bileşeninin beklediği yapıya çeviren TEK normalize noktası.
 function normalizeFabric(f) {
     const kategori = f.kumas_kategori ? String(f.kumas_kategori).trim() : '';
-    const img = safeImg(f.kumas_url || f.ana_foto_url);
+    // Görsel kaynağı: admin panelinde yüklenen gerçek fotoğraflar 'fotograflar'
+    // dizisindedir. Ana görsel = ana=TRUE kayıt (yoksa ilk), ikincil = ana olmayan
+    // ilk kayıt. 'fotograflar' boşsa (eski/legacy veri) kumas_url / ana_foto_url'a
+    // düşülür; o da yoksa placeholder (safeImg garantisi).
+    const fotos = Array.isArray(f.fotograflar) ? f.fotograflar : [];
+    const ana = fotos.find((p) => p && p.ana) || fotos[0] || null;
+    const ikinci = fotos.find((p) => p && p !== ana) || null;
+    const kartela = safeImg((ana && ana.url) || f.kumas_url || f.ana_foto_url);
+    const ikinciImg = safeImg((ikinci && ikinci.url) || (ana && ana.url) || f.kumas_url || f.ana_foto_url);
     return {
         id: f.id,
         isim: f.kumas_adi || '',
         kategori: kategori,
         tur: kategori.toLocaleLowerCase('tr'),
         aciklama: f.kumas_aciklama ? String(f.kumas_aciklama).trim() : '',
-        kartela_resmi: img,
-        ikinci_resim: img,
+        kartela_resmi: kartela,
+        ikinci_resim: ikinciImg,
         fiyat: f.kumas_fiyat,
         stok_durumu: (Number(f.kumas_stok) > 0) ? 'evet' : 'hayir',
     };
