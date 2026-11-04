@@ -66,7 +66,11 @@
         errBox.classList.toggle('hidden', mode !== 'error');
         if (mode === 'error') errBox.querySelector('[data-err-text]').textContent = message || 'Liste yüklenemedi.';
         emptyBox.classList.toggle('hidden', mode !== 'empty');
-        tbody.innerHTML = mode === 'loading' ? skeletonRows(5) : '';
+        // 'list' modunda tbody'YE DOKUNMA: satırlar renderRows() tarafından
+        // zaten dolduruldu; burada temizlersek çizilmiş ürünler anında silinir
+        // ve tablo bomboş kalır (kök neden buydu).
+        if (mode === 'loading') tbody.innerHTML = skeletonRows(5);
+        else if (mode !== 'list') tbody.innerHTML = '';
         app.dataset.state = mode;
     }
 
@@ -80,6 +84,9 @@
     }
 
     function renderRows(kayitlar) {
+        // Önce temizle: yükleme iskeleti ve önceki sayfa/arama satırları kalmasin
+        // (showState('list') artik tbody'ye dokunmuyor).
+        tbody.innerHTML = '';
         const frag = document.createDocumentFragment();
         kayitlar.forEach((k) => frag.appendChild(buildRow(k)));
         tbody.appendChild(frag);
