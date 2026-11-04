@@ -10,7 +10,7 @@
 // ============================================================
 window.ZEN_CONFIG = {
     // Backend kök adresi (sonda / olmadan)
-    apiBase: 'https://api.zentekstil.com.tr',
+    apiBase: 'https://zenkumas-api.onrender.com',
 
     // Oturum anahtarları — localStorage'daki sahte 'user' ile karışmaz
     tokenKey: 'zenAdminToken',
