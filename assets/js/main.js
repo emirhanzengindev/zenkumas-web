@@ -4,90 +4,18 @@
 // filtreleme ve chatbot tüm sayfalarda bu dosyadan yönetilir.
 // ============================================================
 
-// Statik kumaş verisi - 9 kumaş türü, her biri 2 fotoğraf
-const staticFabricData = [
-    {
-        id: 1,
-        isim: "Soho",
-        tur: "soho",
-        aciklama: "Şık ve zarif desenleriyle dikkat çeken Soho kumaşımız, modern yaşam alanlarını şıklıkla tamamlar.",
-        kartela_resmi: "assets/images/soho1.jpg",
-        ikinci_resim: "assets/images/soho2.jpg",
-        stok_durumu: "evet"
-    },
-    {
-        id: 2,
-        isim: "Babyface",
-        tur: "babyface",
-        aciklama: "Yumuşak dokusuyla bebek odaları ve yatak odaları için ideal olan Babyface kumaşımız.",
-        kartela_resmi: "assets/images/babyface1.jpg",
-        ikinci_resim: "assets/images/babyface2.jpg",
-        stok_durumu: "evet"
-    },
-    {
-        id: 3,
-        isim: "Yönsüz Luna",
-        tur: "yonsuz_luna",
-        aciklama: "Yön içermeyen özelliğiyle kolay kullanım ve tasarruf sunan Yönsüz Luna kumaşımız.",
-        kartela_resmi: "assets/images/luna1.jpg",
-        ikinci_resim: "assets/images/luna2.jpg",
-        stok_durumu: "evet"
-    },
-    {
-        id: 4,
-        isim: "Coco",
-        tur: "coco",
-        aciklama: "Doğal ve zarif desenleriyle Coco kumaşımız, rahatlık ve şıklığı bir araya getirir.",
-        kartela_resmi: "assets/images/coco1.jpg",
-        ikinci_resim: "assets/images/coco2.jpg",
-        stok_durumu: "evet"
-    },
-    {
-        id: 5,
-        isim: "Otto",
-        tur: "otto",
-        aciklama: "Klasik ve modernin birleşimi olan Otto kumaşımız, her mekâna yakışır.",
-        kartela_resmi: "assets/images/otto1.jpg",
-        ikinci_resim: "assets/images/otto2.jpg",
-        stok_durumu: "evet"
-    },
-    {
-        id: 6,
-        isim: "Anka",
-        tur: "anka",
-        aciklama: "Renk çeşitliliğiyle öne çıkan Anka kumaşımız, canlı ve enerjik mekânlar için idealdir.",
-        kartela_resmi: "assets/images/anka1.jpg",
-        ikinci_resim: "assets/images/anka2.jpg",
-        stok_durumu: "evet"
-    },
-    {
-        id: 7,
-        isim: "Puffy",
-        tur: "puffy",
-        aciklama: "Kabarık dokusuyla fark yaratan Puffy kumaşımız, görsel olarak dikkat çeker.",
-        kartela_resmi: "assets/images/puffy1.jpg",
-        ikinci_resim: "assets/images/puffy2.jpg",
-        stok_durumu: "evet"
-    },
-    {
-        id: 8,
-        isim: "Zuma",
-        tur: "zuma",
-        aciklama: "Geometrik desenleriyle modern tasarımları tamamlayan Zuma kumaşımız.",
-        kartela_resmi: "assets/images/zuma1.jpg",
-        ikinci_resim: "assets/images/zuma2.jpg",
-        stok_durumu: "evet"
-    },
-    {
-        id: 9,
-        isim: "Santa",
-        tur: "santa",
-        aciklama: "Kutlama temalı desenleriyle Santa kumaşımız, özel mekânlar için idealdir.",
-        kartela_resmi: "assets/images/santa1.jpg",
-        ikinci_resim: "assets/images/santa2.jpg",
-        stok_durumu: "evet"
-    }
-];
+// ============================================================
+// DİNAMİK ÜRÜN KATMANI (Aşama 6 entegrasyonu)
+// Ürünler artık PostgreSQL'den (public API) gelir; sabit veri KULLANILMAZ.
+// Alan eşleşmesi GERÇEK API yanıtından türetilir:
+//   GET /api/kumaslar → [{ id, kumas_adi, kumas_renk, kumas_url, kumas_fiyat,
+//                           kumas_stok, [kumas_kategori], [kumas_aciklama],
+//                           created_at, updated_at }]
+// kumas_kategori / kumas_aciklama backend public projeksiyonunda yoksa null
+// kalır → arayüz zarif biçimde düşer (kategori filtresi yalnızca "Tüm Kumaşlar",
+// kartta açıklama satırı gizli). API bu alanları döndürmeye başladığında
+// frontend DEĞİŞMEDEN otomatik devreye girer (ileri uyumlu).
+// ============================================================
 
 // Global değişkenler
 let tumKumaslar = [];
@@ -95,6 +23,64 @@ let tumKumaslar = [];
 // Kısa yardımcılar
 const $ = (sel, el = document) => el.querySelector(sel);
 const $$ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
+
+// Görsel yoksa/bozuksa kullanılacak placeholder (mevcut var).
+const FALLBACK_IMG = 'assets/images/placeholder.svg';
+
+// XSS koruması: API'den (admin girdisi) gelen metni HTML'e yazmadan önce kaçır.
+function esc(value) {
+    if (value === null || value === undefined) return '';
+    return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// Yalnızca http/https görsel adresi kabul et; diğerini placeholder'a çevir.
+// (javascript: / data: şemalı url enjeksiyonunu yapısal olarak keser.)
+function safeImg(url) {
+    const s = String(url || '').trim();
+    return /^https?:\/\//i.test(s) ? s : FALLBACK_IMG;
+}
+
+// Backend ürününü kart bileşeninin beklediği yapıya çeviren TEK normalize noktası.
+function normalizeFabric(f) {
+    const kategori = f.kumas_kategori ? String(f.kumas_kategori).trim() : '';
+    const img = safeImg(f.kumas_url || f.ana_foto_url);
+    return {
+        id: f.id,
+        isim: f.kumas_adi || '',
+        kategori: kategori,
+        tur: kategori.toLocaleLowerCase('tr'),
+        aciklama: f.kumas_aciklama ? String(f.kumas_aciklama).trim() : '',
+        kartela_resmi: img,
+        ikinci_resim: img,
+        fiyat: f.kumas_fiyat,
+        stok_durumu: (Number(f.kumas_stok) > 0) ? 'evet' : 'hayir',
+    };
+}
+
+// Aynı sayfada gereksiz istek: /api/kumaslar BİR KEZ çekilir; slider + vitrin +
+// liste aynı önbelleği paylaşır. Hata durumunda önbellek sıfırlanır (tekrar denenebilir).
+let _fabricPromise = null;
+function fetchFabrics() {
+    if (_fabricPromise) return _fabricPromise;
+    const base = (window.ZEN_CONFIG && window.ZEN_CONFIG.getApiBase) ? window.ZEN_CONFIG.getApiBase() : '';
+    _fabricPromise = fetch(base + '/api/kumaslar', { headers: { 'Accept': 'application/json' } })
+        .then((res) => {
+            if (!res.ok) throw new Error('Sunucu yanıtı: ' + res.status);
+            return res.json();
+        })
+        .then((data) => {
+            const list = Array.isArray(data) ? data.map(normalizeFabric) : [];
+            tumKumaslar = list;
+            return list;
+        })
+        .catch((err) => { _fabricPromise = null; throw err; });
+    return _fabricPromise;
+}
 
 // ============================================================
 // UYGULAMA BAŞLATMA
@@ -105,11 +91,35 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeChatbot();
     initializeReveal();
 
-    // Sayfaya göre özel başlatmalar
-    if ($('#swiper-wrapper')) loadSlider();
-    if ($('#vitrin-container')) renderVitrin();
-    if ($('#kumaslar-container')) initKumaslarPage();
+    initDynamicProducts();
 });
+
+// Ürün ekranları: ana sayfada slider + vitrin, kumaşlar sayfasında filtreli grid.
+// TEK fetch; her ekran önce iskeletini çizer, veri gelince doldurur, hata çıkarsa
+// anlaşılır mesaj gösterir. Bu fonksiyon patlasa bile header/chatbot/slider çalışmaya
+// devam eder (sayfanın geri kalanı JS'i durdurmaz).
+function initDynamicProducts() {
+    const hasSlider = !!$('#swiper-wrapper');
+    const hasVitrin = !!$('#vitrin-container');
+    const hasKumaslar = !!$('#kumaslar-container');
+    if (!hasSlider && !hasVitrin && !hasKumaslar) return;
+
+    if (hasVitrin) setVitrinLoading();
+    if (hasKumaslar) setKumaslarLoading();
+
+    fetchFabrics()
+        .then((fabrics) => {
+            if (hasSlider) loadSlider(fabrics);
+            if (hasVitrin) renderVitrin(fabrics);
+            if (hasKumaslar) initKumaslarPage(fabrics);
+        })
+        .catch((err) => {
+            console.error('Ürünler yüklenemedi:', err);
+            if (hasSlider) hideSliderSection();
+            if (hasVitrin) setVitrinError();
+            if (hasKumaslar) setKumaslarError();
+        });
+}
 
 // ============================================================
 // KULLANICI ALANI (Giriş / Kayıt / Profil)
@@ -208,26 +218,28 @@ function initializeReveal() {
 // ============================================================
 // HERO SLIDER (Ana sayfa)
 // ============================================================
-async function loadSlider() {
+async function loadSlider(fabrics) {
     try {
         const wrapper = $('#swiper-wrapper');
         if (!wrapper) return;
 
         wrapper.innerHTML = '';
 
-        const sliderFabrics = staticFabricData.slice(0, 5);
+        const sliderFabrics = (fabrics || []).slice(0, 5);
+        if (!sliderFabrics.length) { hideSliderSection(); return; }
 
         sliderFabrics.forEach(fabric => {
             const slide = document.createElement('div');
             slide.className = 'swiper-slide relative overflow-hidden';
             slide.innerHTML = `
-                <img src="${fabric.kartela_resmi}" alt="${fabric.isim}"
+                <img src="${esc(safeImg(fabric.kartela_resmi))}" alt="${esc(fabric.isim)}"
+                     onerror="this.onerror=null;this.src='${FALLBACK_IMG}';"
                      class="absolute inset-0 w-full h-full object-cover" />
                 <div class="hero-overlay absolute inset-0"></div>
                 <div class="slide-content relative z-10 h-full flex flex-col justify-end p-8 md:p-14 max-w-2xl">
                     <p class="text-xs md:text-sm font-semibold uppercase tracking-[0.25em] text-bronze-light mb-3">Yeni Koleksiyon</p>
-                    <h2 class="font-display text-3xl md:text-5xl font-bold text-cream text-shadow-hero mb-3">${fabric.isim}</h2>
-                    <p class="text-sm md:text-base text-cream/90 leading-relaxed mb-6">${fabric.aciklama}</p>
+                    <h2 class="font-display text-3xl md:text-5xl font-bold text-cream text-shadow-hero mb-3">${esc(fabric.isim)}</h2>
+                    <p class="text-sm md:text-base text-cream/90 leading-relaxed mb-6">${esc(fabric.aciklama || 'Zen Kumaş koleksiyonundan seçkin döşemelik kumaş.')}</p>
                     <div>
                         <a href="kumaslar.html" class="inline-flex items-center gap-2 bg-bronze hover:bg-bronze-dark text-white text-sm font-semibold px-6 py-3 rounded-full transition shadow-lifted">
                             Koleksiyonu Gör
@@ -276,20 +288,26 @@ async function loadSlider() {
 // ============================================================
 function createFabricCard(fabric) {
     const inStock = fabric.stok_durumu === 'evet';
+    const name = esc(fabric.isim);
+    const aciklama = fabric.aciklama
+        ? esc(fabric.aciklama)
+        : '<span class="text-ink-muted">Açıklama yakında eklenecek.</span>';
     return `
         <article class="fabric-card group bg-white rounded-2xl overflow-hidden shadow-soft">
             <div class="relative h-60 overflow-hidden">
-                <img src="${fabric.kartela_resmi}" alt="${fabric.isim} kartela" loading="lazy"
+                <img src="${esc(safeImg(fabric.kartela_resmi))}" alt="${name} kartela" loading="lazy"
+                     onerror="this.onerror=null;this.src='${FALLBACK_IMG}';"
                      class="img-layer img-front absolute inset-0 w-full h-full object-cover" />
-                <img src="${fabric.ikinci_resim}" alt="${fabric.isim} detay" loading="lazy"
+                <img src="${esc(safeImg(fabric.ikinci_resim))}" alt="${name} detay" loading="lazy"
+                     onerror="this.onerror=null;this.src='${FALLBACK_IMG}';"
                      class="img-layer img-back absolute inset-0 w-full h-full object-cover" />
                 <span class="absolute top-3 left-3 z-10 text-xs font-semibold px-3 py-1 rounded-full backdrop-blur ${inStock ? 'bg-white/90 text-ink' : 'bg-ink/80 text-cream'}">
                     ${inStock ? '● Stokta Var' : 'Stok Tükendi'}
                 </span>
             </div>
             <div class="p-5">
-                <h3 class="font-display text-xl font-bold text-ink">${fabric.isim}</h3>
-                <p class="text-sm leading-relaxed text-ink-soft mt-2">${fabric.aciklama || 'Açıklama bulunamadı.'}</p>
+                <h3 class="font-display text-xl font-bold text-ink">${name}</h3>
+                <p class="text-sm leading-relaxed text-ink-soft mt-2">${aciklama}</p>
                 <div class="mt-4 pt-4 border-t border-cream-dark flex items-center justify-between">
                     <span class="text-xs uppercase tracking-wider text-ink-muted">Top & Kesmece</span>
                     <a href="iletisim.html" class="inline-flex items-center gap-1 text-sm font-semibold text-bronze-dark hover:text-ink transition">
@@ -302,23 +320,90 @@ function createFabricCard(fabric) {
     `;
 }
 
-// Ana sayfa vitrini
-function renderVitrin() {
-    const container = $('#vitrin-container');
-    if (!container) return;
-    container.innerHTML = staticFabricData.map(createFabricCard).join('');
+// Yükleniyor / boş / hata durum arayüzleri (grid içine col-span-full ile oturur).
+function skeletonCards(n) {
+    let s = '';
+    for (let i = 0; i < n; i++) {
+        s += '<div class="fabric-card bg-white rounded-2xl overflow-hidden shadow-soft">' +
+             '<div class="h-60 animate-pulse bg-cream-dark"></div>' +
+             '<div class="p-5 space-y-3">' +
+             '<div class="h-5 w-2/3 rounded animate-pulse bg-cream-dark"></div>' +
+             '<div class="h-3 w-full rounded animate-pulse bg-cream-dark"></div>' +
+             '<div class="h-3 w-4/5 rounded animate-pulse bg-cream-dark"></div>' +
+             '</div></div>';
+    }
+    return s;
+}
+function emptyBlock(title, msg) {
+    return '<div class="col-span-full text-center py-16">' +
+        '<p class="font-display text-lg font-bold text-ink mb-1">' + esc(title) + '</p>' +
+        '<p class="text-sm text-ink-muted">' + esc(msg) + '</p></div>';
+}
+function errorBlock(msg) {
+    return '<div class="col-span-full text-center py-16">' +
+        '<p class="font-display text-lg font-bold text-red-700 mb-1">Ürünler yüklenemedi</p>' +
+        '<p class="text-sm text-ink-muted">' + esc(msg) + '</p></div>';
+}
+function hideSliderSection() {
+    const s = $('#slider-section');
+    if (s) s.style.display = 'none';
 }
 
-// Kumaşlar sayfası (filtre + grid)
-function initKumaslarPage() {
+// Ana sayfa vitrini — en fazla 6 ürün, backend sira sırası korunur (API sıralı döner).
+function setVitrinLoading() {
+    const c = $('#vitrin-container');
+    if (c) c.innerHTML = skeletonCards(6);
+}
+function setVitrinError() {
+    const c = $('#vitrin-container');
+    if (c) c.innerHTML = errorBlock('Lütfen daha sonra tekrar deneyin.');
+}
+function renderVitrin(fabrics) {
+    const container = $('#vitrin-container');
+    if (!container) return;
+    const list = fabrics || [];
+    if (!list.length) {
+        container.innerHTML = emptyBlock('Henüz ürün yok', 'Yakında koleksiyonumuz vitrinde olacak.');
+        return;
+    }
+    container.innerHTML = list.slice(0, 6).map(createFabricCard).join('');
+}
+
+// Kumaşlar sayfası (filtre + grid) — kategori filtresi GERÇEK veriden üretilir.
+function setKumaslarLoading() {
+    const c = $('#kumaslar-container');
+    if (c) c.innerHTML = skeletonCards(6);
+}
+function setKumaslarError() {
+    const c = $('#kumaslar-container');
+    if (c) c.innerHTML = errorBlock('Lütfen sayfayı yenileyip tekrar deneyin.');
+}
+function buildCategoryFilter(fabrics) {
+    const ul = $('#kumas-turleri');
+    if (!ul) return;
+    const seen = new Set();
+    const cats = [];
+    (fabrics || []).forEach((f) => {
+        if (f.tur && !seen.has(f.tur)) { seen.add(f.tur); cats.push({ tur: f.tur, label: f.kategori }); }
+    });
+    cats.sort((a, b) => a.label.localeCompare(b.label, 'tr'));
+    let html = '<li data-tur="all" class="filter-item active px-3 py-2 rounded-lg font-medium">Tüm Kumaşlar</li>';
+    cats.forEach((c) => {
+        html += `<li data-tur="${esc(c.tur)}" class="filter-item px-3 py-2 rounded-lg font-medium">${esc(c.label)}</li>`;
+    });
+    ul.innerHTML = html;
+}
+function initKumaslarPage(fabrics) {
     const container = $('#kumaslar-container');
-    const typesList = $('#kumas-turleri');
     if (!container) return;
 
-    tumKumaslar = staticFabricData;
+    tumKumaslar = fabrics || [];
+    buildCategoryFilter(tumKumaslar);
     displayFabrics('all');
 
-    if (typesList) {
+    const typesList = $('#kumas-turleri');
+    if (typesList && !typesList.dataset.bound) {
+        typesList.dataset.bound = '1';
         typesList.addEventListener('click', (e) => {
             const li = e.target.closest('li');
             if (!li) return;
@@ -333,12 +418,12 @@ function displayFabrics(filter) {
     const container = $('#kumaslar-container');
     if (!container) return;
 
-    container.innerHTML = '';
-
-    const arr = filter === 'all' ? tumKumaslar : tumKumaslar.filter(k => k.tur === filter);
+    const arr = (!filter || filter === 'all')
+        ? tumKumaslar
+        : tumKumaslar.filter(k => k.tur === filter);
 
     if (!arr.length) {
-        container.innerHTML = '<p class="col-span-full text-center text-ink-muted py-16">Bu türde kumaş bulunamadı.</p>';
+        container.innerHTML = emptyBlock('Kumaş bulunamadı', 'Bu türde yayınlanmış ürün henüz yok.');
         return;
     }
 

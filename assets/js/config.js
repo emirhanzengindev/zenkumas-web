@@ -1,7 +1,7 @@
 // ============================================================
 // Zen Kumaş - Merkezi API Yapılandırması
 // API temel adresi TEK kaynak: bu dosya.
-// - Üretim: https://api.zentekstil.com.tr
+// - Üretim (canlı): https://zenkumas-api.onrender.com
 // - Yerel geliştirme: tarayıcı konsolundan geçici override:
 //     sessionStorage.setItem('zenApiOverride', 'http://localhost:3000')
 // - Bu dosyaya ASLA JWT_SECRET, veritabanı veya Cloudinary
