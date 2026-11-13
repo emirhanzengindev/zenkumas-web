@@ -567,3 +567,60 @@ function botReply(userMsg) {
         if (/anlayamadım/.test(response)) addQuickChips(['Kumaşlar', 'Fiyat', 'İletişim']);
     }, 700);
 }
+
+// ============================================================
+// LIGHTBOX / FOTOĞRAF BÜYÜTME
+// Kumaş kartlarındaki resme tıkladığında görseli tam ekran büyütür.
+// Dinamik olarak eklenen kartlar için event delegation kullanılır.
+// ============================================================
+function initLightbox() {
+    const box = $('#fabric-lightbox');
+    const img = $('#lightbox-img');
+    const caption = $('#lightbox-caption');
+    const closeBtn = $('#lightbox-close');
+    if (!box || !img || !caption || !closeBtn) return;
+
+    function openLightbox(src, alt) {
+        img.src = src;
+        img.alt = alt || '';
+        caption.textContent = alt || '';
+        box.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        box.classList.remove('open');
+        img.src = '';
+        img.alt = '';
+        caption.textContent = '';
+        document.body.style.overflow = '';
+    }
+
+    // Kumaş kartındaki resme tıklama (delegasyon: dinamik kartlar için de çalışır)
+    document.addEventListener('click', (e) => {
+        const target = e.target.closest('.fabric-card .img-layer');
+        if (!target) return;
+        e.preventDefault();
+        openLightbox(target.src || target.currentSrc, target.alt);
+    });
+
+    // Kapatma butonu
+    closeBtn.addEventListener('click', closeLightbox);
+
+    // Overlay'e tıklama (kendi dışına tıklanırsa kapanır)
+    box.addEventListener('click', (e) => {
+        if (e.target === box) closeLightbox();
+    });
+
+    // ESC tuşu
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && box.classList.contains('open')) closeLightbox();
+    });
+}
+
+// Başlat
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLightbox);
+} else {
+    initLightbox();
+}
