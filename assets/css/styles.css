@@ -452,3 +452,110 @@ body {
     border-color: #D2B48C;
     box-shadow: 0 0 0 3px rgba(210, 180, 140, 0.25);
 }
+
+/* ---------- Ana sayfa hero: dönen kartela halkası ----------
+   9 kart Y ekseninde bir halka oluşturur; halka yavaşça döner.
+   --w: kart genişliği, --r: halka yarıçapı (kartlar üst üste binmesin diye
+   r ≥ w / (2·sin(180°/n)) ≈ 1.46w; biraz boşluk için 1.55w). */
+.kartela-halka {
+    --n: 9;
+    --w: clamp(112px, 13vw, 188px);
+    --r: calc(var(--w) * 1.55);
+    perspective: 1500px;
+}
+
+.kartela-halka__isik {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 58%, rgba(176, 137, 104, 0.30), transparent 62%);
+    pointer-events: none;
+}
+
+.kartela-halka__sahne {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-style: preserve-3d;
+    transform: rotateX(-9deg);
+}
+
+.kartela-halka__ring {
+    position: relative;
+    width: var(--w);
+    height: calc(var(--w) * 1.25);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    transform-style: preserve-3d;
+    animation: kartela-don 52s linear infinite;
+    /* Halkanın ve kart kutularının görünmez alanları tıklamayı YUTMASIN:
+       yalnızca kartın kendisi (a) tıklanabilir. Aksi hâlde arkadaki kartların
+       boş kutuları öndeki kartın üstüne biner ve tıklama boşa gider. */
+    pointer-events: none;
+}
+
+.kartela-halka__ring li {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: rotateY(calc(var(--i) * 360deg / var(--n))) translateZ(var(--r));
+    pointer-events: none;
+}
+
+.kartela-halka__ring a {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #2c2722;
+    box-shadow: 0 28px 50px -22px rgba(0, 0, 0, 0.75);
+    /* Arka yüz (halkanın gerisi) aynalı görünmesin */
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    outline-offset: 3px;
+    pointer-events: auto;
+}
+
+.kartela-halka__ring img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.kartela-halka__ring span {
+    position: absolute;
+    left: 8px;
+    bottom: 8px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(34, 30, 25, 0.78);
+    color: #FAF7F1;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+@keyframes kartela-don {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(-360deg); }
+}
+
+/* Üstüne gelince, klavyeyle odaklanınca veya ekran dışındayken (JS) dur */
+.kartela-halka:hover .kartela-halka__ring,
+.kartela-halka:focus-within .kartela-halka__ring,
+.kartela-halka.is-paused .kartela-halka__ring {
+    animation-play-state: paused;
+}
+
+/* Hareket hassasiyeti: dönme yok, halka sabit bir açıda durur */
+@media (prefers-reduced-motion: reduce) {
+    .kartela-halka__ring {
+        animation: none;
+        transform: rotateY(-12deg);
+    }
+}

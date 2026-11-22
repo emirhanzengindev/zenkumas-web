@@ -124,11 +124,25 @@
                         </a>
                     </div>
                 </div>
-                <div class="relative min-h-[320px] sm:min-h-[440px] lg:min-h-[600px]">
-                    <img src="assets/images/hero-kartela.jpg" width="1440" height="1100" fetchpriority="high" decoding="async"
-                         alt="Babyface ve Anka döşemelik kumaş kartelaları, renk renk dizili kumaş numuneleri"
-                         class="absolute inset-0 w-full h-full object-cover" />
-                    <div class="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-ink to-transparent hidden lg:block" aria-hidden="true"></div>
+                <!-- DÖNEN KARTELA HALKASI (styles.css → .kartela-halka; main.js → initKartelaHalkasi)
+                     Fareyle üstüne gelince / klavyeyle odaklanınca durur, ekran dışındayken durur,
+                     "hareketi azalt" tercihinde hiç dönmez. Karta tıklamak teklif formunu o kumaşla doldurur. -->
+                <div class="kartela-halka relative min-h-[330px] sm:min-h-[440px] lg:min-h-[600px] overflow-hidden" data-kartela-halka>
+                    <div class="kartela-halka__isik" aria-hidden="true"></div>
+                    <div class="kartela-halka__sahne">
+                        <ul class="kartela-halka__ring" aria-label="Kumaş koleksiyonu kartelaları">
+                            <li style="--i:0"><a href="#teklif" data-teklif-kumas="Babyface" aria-label="Babyface için teklif iste"><img src="assets/images/kartela/babyface.webp" width="480" height="600" decoding="async" fetchpriority="high" alt="Babyface döşemelik kumaş kartelası"><span>Babyface</span></a></li>
+                            <li style="--i:1"><a href="#teklif" data-teklif-kumas="Soho" aria-label="Soho için teklif iste"><img src="assets/images/kartela/soho.webp" width="480" height="600" decoding="async" alt="Soho döşemelik kumaş kartelası"><span>Soho</span></a></li>
+                            <li style="--i:2"><a href="#teklif" data-teklif-kumas="Anka" aria-label="Anka için teklif iste"><img src="assets/images/kartela/anka.webp" width="480" height="600" decoding="async" alt="Anka döşemelik kumaş kartelası"><span>Anka</span></a></li>
+                            <li style="--i:3"><a href="#teklif" data-teklif-kumas="Puffy" aria-label="Puffy için teklif iste"><img src="assets/images/kartela/puffy.webp" width="480" height="600" decoding="async" alt="Puffy döşemelik kumaş kartelası"><span>Puffy</span></a></li>
+                            <li style="--i:4"><a href="#teklif" data-teklif-kumas="Santa" aria-label="Santa için teklif iste"><img src="assets/images/kartela/santa.webp" width="480" height="600" decoding="async" alt="Santa döşemelik kumaş kartelası"><span>Santa</span></a></li>
+                            <li style="--i:5"><a href="#teklif" data-teklif-kumas="Luna" aria-label="Luna için teklif iste"><img src="assets/images/kartela/luna.webp" width="480" height="600" decoding="async" alt="Luna (yönsüz, baklava, kare) döşemelik kumaş kartelası"><span>Luna</span></a></li>
+                            <li style="--i:6"><a href="#teklif" data-teklif-kumas="Coco" aria-label="Coco için teklif iste"><img src="assets/images/kartela/coco.webp" width="480" height="600" decoding="async" alt="Coco döşemelik kumaş kartelası"><span>Coco</span></a></li>
+                            <li style="--i:7"><a href="#teklif" data-teklif-kumas="Zuma" aria-label="Zuma için teklif iste"><img src="assets/images/kartela/zuma.webp" width="480" height="600" decoding="async" alt="Zuma döşemelik kumaş kartelası"><span>Zuma</span></a></li>
+                            <li style="--i:8"><a href="#teklif" data-teklif-kumas="Otto" aria-label="Otto için teklif iste"><img src="assets/images/kartela/otto.webp" width="480" height="600" decoding="async" alt="Otto döşemelik kumaş kartelası"><span>Otto</span></a></li>
+                        </ul>
+                    </div>
+                    <div class="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-ink to-transparent hidden lg:block pointer-events-none" aria-hidden="true"></div>
                 </div>
             </div>
         </section>

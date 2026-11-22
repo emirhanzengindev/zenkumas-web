@@ -101,7 +101,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     initDynamicProducts();
     initTeklifFormlari();
+    initKartelaHalkasi();
 });
+
+// Hero'daki dönen kartela halkası: ekranda görünmüyorsa animasyonu durdur
+// (pil/CPU tasarrufu). Durdurma sınıfı CSS'te: .kartela-halka.is-paused
+function initKartelaHalkasi() {
+    const halka = document.querySelector('[data-kartela-halka]');
+    if (!halka || !('IntersectionObserver' in window)) return;
+    new IntersectionObserver((girdiler) => {
+        girdiler.forEach((g) => halka.classList.toggle('is-paused', !g.isIntersecting));
+    }, { threshold: 0.05 }).observe(halka);
+}
 
 // ============================================================
 // TEKLİF / İLETİŞİM FORMLARI → POST /api/teklif
