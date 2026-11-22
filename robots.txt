@@ -1,6 +1,8 @@
 # Zen Kumaş — arama motoru yapılandırması
-# Yönetim paneli ve hesap sayfaları indekslenmez.
+# Yönetim paneli taranmaz.
+# Giriş/kayıt sayfaları burada ENGELLENMEZ: sayfalardaki <meta name="robots"
+# content="noindex"> etiketini Google'ın görebilmesi için taranabilir olmalılar.
 User-agent: *
 Disallow: /admin/
-Disallow: /giris.html
-Disallow: /kayit.html
+
+Sitemap: https://www.zentekstil.tr/sitemap.xml

@@ -1,0 +1,16 @@
+{
+    "redirects": [
+        {
+            "source": "/:path(.*)",
+            "has": [{ "type": "host", "value": "zentekstil.tr" }],
+            "destination": "https://www.zentekstil.tr/:path",
+            "permanent": true
+        },
+        {
+            "source": "/:path(.*)",
+            "has": [{ "type": "host", "value": "zenkumas-web.vercel.app" }],
+            "destination": "https://www.zentekstil.tr/:path",
+            "permanent": true
+        }
+    ]
+}
