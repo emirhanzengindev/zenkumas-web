@@ -76,7 +76,7 @@ body {
 }
 
 #menu-toggle.menu-open .bar-top {
-    transform: translateY(7px) rotate(45deg);
+    transform: translateY(8px) rotate(45deg); /* çizgi 2px + boşluk 6px = 8px */
 }
 
 #menu-toggle.menu-open .bar-mid {
@@ -84,7 +84,7 @@ body {
 }
 
 #menu-toggle.menu-open .bar-bot {
-    transform: translateY(-7px) rotate(-45deg);
+    transform: translateY(-8px) rotate(-45deg);
 }
 
 /* ---------- Hero Slider ---------- */

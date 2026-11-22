@@ -29,63 +29,43 @@
 </head>
 <body class="bg-cream text-ink">
 
-    <!-- Ü BİLGİ BARı -->
-    <div class="bg-ink text-cream/75 text-xs hidden lg:block">
-        <div class="max-w-7xl mx-auto px-8 flex items-center justify-between h-10">
-            <p class="flex items-center gap-2">
-                <svg class="w-3.5 h-3.5 text-bronze-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                Altınova Fuar Caddesi No:61 Ofis No 5236, Osmangazi/Bursa
-            </p>
-            <div class="flex items-center gap-6">
-                <a href="tel:+905327081625" class="flex items-center gap-2 hover:text-bronze-light transition">
-                    <svg class="w-3.5 h-3.5 text-bronze-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                    0 (532) 708 16 25
-                </a>
-                <a href="mailto:emiir1230@gmail.com" class="flex items-center gap-2 hover:text-bronze-light transition">
-                    <svg class="w-3.5 h-3.5 text-bronze-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                    emiir1230@gmail.com
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- HEADER -->
-    <header id="site-header" class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-cream-dark">
-        <div class="max-w-7xl mx-auto flex items-center justify-between px-4 lg:px-8 h-20">
-            <a href="index.html" class="flex items-center gap-3 shrink-0">
-                <span class="w-11 h-11 rounded-full bg-ink text-cream flex items-center justify-center font-display text-2xl font-bold">Z</span>
-                <span class="font-display text-2xl font-bold tracking-wide">ZEN <span class="text-bronze">KUMAŞ</span></span>
+    <!-- HEADER (koyu; tüm genel sayfalarda aynı — kaynak: index.html) -->
+    <header id="site-header" class="nav-dark sticky top-0 z-50 bg-ink text-cream border-b border-white/10">
+        <div class="max-w-7xl mx-auto flex items-center justify-between px-4 lg:px-8 h-16 lg:h-20">
+            <a href="index.html" class="flex items-center gap-3 shrink-0" aria-label="Zen Kumaş ana sayfa">
+                <span class="w-10 h-10 rounded-full bg-cream text-ink flex items-center justify-center font-display text-xl font-bold">Z</span>
+                <span class="font-display text-xl lg:text-2xl font-bold tracking-wide">ZEN <span class="text-bronze-light">KUMAŞ</span></span>
             </a>
 
-            <nav class="hidden md:flex items-center gap-8 font-medium text-[15px]">
+            <nav class="hidden md:flex items-center gap-8 font-medium text-[15px]" aria-label="Ana menü">
                 <a href="index.html" class="nav-link" data-nav="index">Ana Sayfa</a>
                 <a href="kumaslar.html" class="nav-link" data-nav="kumaslar">Kumaşlar</a>
                 <a href="hakkimizda.html" class="nav-link" data-nav="hakkimizda">Hakkımızda</a>
                 <a href="iletisim.html" class="nav-link" data-nav="iletisim">İletişim</a>
             </nav>
 
-            <div id="kullanici-alani" class="hidden md:flex items-center gap-4">
-                <!-- JS ile doldurulacak -->
-            </div>
+            <a href="iletisim.html#bize-yazin" class="hidden md:inline-flex items-center gap-2 bg-cream text-ink text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-bronze-light transition">
+                Teklif iste
+            </a>
 
             <button id="menu-toggle" class="md:hidden flex flex-col gap-1.5 p-2" aria-label="Menüyü aç">
-                <span class="bar bar-top w-6 h-0.5 bg-ink"></span>
-                <span class="bar bar-mid w-6 h-0.5 bg-ink"></span>
-                <span class="bar bar-bot w-6 h-0.5 bg-ink"></span>
+                <span class="bar bar-top w-6 h-0.5 bg-cream"></span>
+                <span class="bar bar-mid w-6 h-0.5 bg-cream"></span>
+                <span class="bar bar-bot w-6 h-0.5 bg-cream"></span>
             </button>
         </div>
 
         <!-- Mobil menü -->
-        <div id="mobile-menu" class="md:hidden hidden border-t border-cream-dark bg-white px-6 py-5">
-            <nav class="flex flex-col gap-4 font-medium">
+        <div id="mobile-menu" class="md:hidden hidden border-t border-white/10 bg-ink px-6 py-5">
+            <nav class="flex flex-col gap-4 font-medium" aria-label="Mobil menü">
                 <a href="index.html" class="nav-link" data-nav="index">Ana Sayfa</a>
                 <a href="kumaslar.html" class="nav-link" data-nav="kumaslar">Kumaşlar</a>
                 <a href="hakkimizda.html" class="nav-link" data-nav="hakkimizda">Hakkımızda</a>
                 <a href="iletisim.html" class="nav-link" data-nav="iletisim">İletişim</a>
             </nav>
-            <div class="mt-5 pt-5 border-t border-cream-dark flex items-center gap-4">
-                <a href="giris.html" class="text-sm font-medium text-ink-soft hover:text-bronze-dark">Giriş Yap</a>
-                <a href="kayit.html" class="text-sm font-semibold bg-ink text-cream px-4 py-2 rounded-full">Hesap Oluştur</a>
+            <div class="mt-5 pt-5 border-t border-white/10 flex flex-wrap items-center gap-3">
+                <a href="iletisim.html#bize-yazin" class="text-sm font-semibold bg-cream text-ink px-5 py-2.5 rounded-full">Teklif iste</a>
+                <a href="tel:+905327081625" class="text-sm font-medium text-cream/85">0 (532) 708 16 25</a>
             </div>
         </div>
     </header>
