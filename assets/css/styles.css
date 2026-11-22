@@ -459,7 +459,7 @@ body {
    r ≥ w / (2·sin(180°/n)) ≈ 1.46w; biraz boşluk için 1.55w). */
 .kartela-halka {
     --n: 9;
-    --w: clamp(112px, 13vw, 188px);
+    --w: clamp(140px, 16vw, 250px);
     --r: calc(var(--w) * 1.55);
     perspective: 1500px;
 }
@@ -484,7 +484,7 @@ body {
 .kartela-halka__ring {
     position: relative;
     width: var(--w);
-    height: calc(var(--w) * 1.25);
+    height: calc(var(--w) * 1.5);   /* 2:3 — kartela uzun şerit gibi görünsün */
     margin: 0;
     padding: 0;
     list-style: none;
