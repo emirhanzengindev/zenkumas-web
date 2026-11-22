@@ -440,10 +440,54 @@ function hideSliderSection() {
     if (s) s.style.display = 'none';
 }
 
-// Ana sayfa vitrini — en fazla 6 ürün, backend sira sırası korunur (API sıralı döner).
+// Ana sayfa (yeni tasarım) kartı: büyük kartela görseli + ad + teklif oku.
+// Görsele tıklama lightbox'ı açar (.fabric-card .img-layer); ok, sayfadaki teklif
+// formuna kaydırır ve kumaş adını mesaja yazar (initTeklifKisayolu).
+function createVitrinCard(fabric) {
+    const name = esc(fabric.isim);
+    return `
+        <article class="fabric-card group bg-white rounded-2xl overflow-hidden shadow-soft flex flex-col">
+            <div class="relative aspect-[4/5] overflow-hidden bg-cream-dark">
+                <img src="${esc(safeImg(fabric.kartela_resmi))}" alt="${name} döşemelik kumaş kartelası" loading="lazy" decoding="async"
+                     onerror="this.onerror=null;this.src='${FALLBACK_IMG}';"
+                     class="img-layer absolute inset-0 w-full h-full object-cover cursor-zoom-in group-hover:scale-[1.03]" />
+                <span class="absolute top-3 left-3 text-xs font-semibold px-3 py-1 rounded-full bg-white/90 text-ink">Kartela</span>
+            </div>
+            <div class="p-5 flex items-center justify-between gap-4">
+                <div class="min-w-0">
+                    <h3 class="font-display text-xl text-ink truncate">${name}</h3>
+                    <p class="text-sm text-ink-soft mt-0.5">Top &amp; kesmece · Teklif al</p>
+                </div>
+                <a href="#teklif" data-teklif-kumas="${name}" aria-label="${name} için teklif iste"
+                   class="shrink-0 w-11 h-11 rounded-full border border-[#E4DBCE] flex items-center justify-center text-ink hover:bg-ink hover:text-cream transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            </div>
+        </article>
+    `;
+}
+
+// Karttaki teklif oku: formu kumaş adıyla doldurup forma kaydırır.
+// Formun olmadığı sayfada link normal çalışır (#teklif).
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('[data-teklif-kumas]');
+    const alan = document.getElementById('teklif-mesaj');
+    if (!link || !alan) return;
+    e.preventDefault();
+    if (!alan.value.trim()) alan.value = `${link.dataset.teklifKumas} için teklif almak istiyorum. Renk kodu ve metraj: `;
+    document.getElementById('teklif').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => alan.focus({ preventScroll: true }), 600);
+});
+
+// Ana sayfa vitrini — backend sira sırası korunur (API sıralı döner).
+// Klasik stil 6 kart; yeni tasarım (data-vitrin-stil="kartela") 9 kart.
+function vitrinKartela() {
+    const c = $('#vitrin-container');
+    return !!c && c.dataset.vitrinStil === 'kartela';
+}
 function setVitrinLoading() {
     const c = $('#vitrin-container');
-    if (c) c.innerHTML = skeletonCards(6);
+    if (c) c.innerHTML = skeletonCards(vitrinKartela() ? 3 : 6);
 }
 function setVitrinError() {
     const c = $('#vitrin-container');
@@ -457,7 +501,17 @@ function renderVitrin(fabrics) {
         container.innerHTML = emptyBlock('Henüz ürün yok', 'Yakında koleksiyonumuz vitrinde olacak.');
         return;
     }
-    container.innerHTML = list.slice(0, 6).map(createFabricCard).join('');
+
+    // Koleksiyon sayısı: isme göre TEKİL (aynı kumaşın ikinci kaydı sayıyı şişirmez).
+    const sayac = $('[data-koleksiyon-sayisi]');
+    if (sayac) {
+        const tekil = new Set(list.map((f) => String(f.isim || '').trim().toLocaleLowerCase('tr')).filter(Boolean));
+        if (tekil.size) sayac.textContent = String(tekil.size);
+    }
+
+    container.innerHTML = vitrinKartela()
+        ? list.slice(0, 9).map(createVitrinCard).join('')
+        : list.slice(0, 6).map(createFabricCard).join('');
 }
 
 // Kumaşlar sayfası (filtre + grid) — kategori filtresi GERÇEK veriden üretilir.

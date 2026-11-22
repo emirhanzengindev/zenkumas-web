@@ -426,3 +426,29 @@ body {
         display: none;
     }
 }
+
+/* ---------- Ana sayfa: koyu header varyantı ---------- */
+.nav-dark .nav-link {
+    color: rgba(250, 247, 241, 0.78);
+}
+
+.nav-dark .nav-link:hover,
+.nav-dark .nav-link.active {
+    color: #FAF7F1;
+}
+
+/* ---------- Koyu zemin üzerindeki form alanları (ana sayfa teklif formu) ---------- */
+.form-input--dark {
+    background: rgba(250, 247, 241, 0.06);
+    border-color: rgba(250, 247, 241, 0.18);
+    color: #FAF7F1;
+}
+
+.form-input--dark::placeholder {
+    color: rgba(250, 247, 241, 0.45);
+}
+
+.form-input--dark:focus {
+    border-color: #D2B48C;
+    box-shadow: 0 0 0 3px rgba(210, 180, 140, 0.25);
+}
