@@ -478,27 +478,149 @@ function createVitrinCard(fabric) {
     `;
 }
 
-// Karttaki teklif oku: formu kumaş adıyla doldurup forma kaydırır.
-// Formun olmadığı sayfada link normal çalışır (#teklif).
-document.addEventListener('click', (e) => {
-    const link = e.target.closest('[data-teklif-kumas]');
+// Teklif formuna git: mesaj kutusu boşsa kumaş adıyla doldur, forma kaydır.
+// Sayfada form yoksa false döner (çağıran normal bağlantı davranışına bırakır).
+function teklifFormunaGit(kumasAdi) {
     const alan = document.getElementById('teklif-mesaj');
-    if (!link || !alan) return;
-    e.preventDefault();
-    if (!alan.value.trim()) alan.value = `${link.dataset.teklifKumas} için teklif almak istiyorum. Renk kodu ve metraj: `;
+    if (!alan) return false;
+    if (!alan.value.trim()) alan.value = `${kumasAdi} için teklif almak istiyorum. Renk kodu ve metraj: `;
     document.getElementById('teklif').scrollIntoView({ behavior: 'smooth', block: 'start' });
     setTimeout(() => alan.focus({ preventScroll: true }), 600);
+    return true;
+}
+
+// [data-teklif-kumas] bağlantıları (hero halkası, eski vitrin kartı).
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('[data-teklif-kumas]');
+    if (link && teklifFormunaGit(link.dataset.teklifKumas)) e.preventDefault();
 });
 
 // Ana sayfa vitrini — backend sira sırası korunur (API sıralı döner).
-// Klasik stil 6 kart; yeni tasarım (data-vitrin-stil="kartela") 9 kart.
-function vitrinKartela() {
+// Stiller: klasik grid (6 kart) | "kartela" grid (9 kart) | "karusel" (dönen 3B karusel).
+function vitrinStili() {
     const c = $('#vitrin-container');
-    return !!c && c.dataset.vitrinStil === 'kartela';
+    return (c && c.dataset.vitrinStil) || '';
+}
+function vitrinKartela() {
+    return vitrinStili() === 'kartela';
 }
 function setVitrinLoading() {
     const c = $('#vitrin-container');
-    if (c) c.innerHTML = skeletonCards(vitrinKartela() ? 3 : 6);
+    if (!c) return;
+    c.innerHTML = vitrinStili() === 'karusel'
+        ? '<div class="zk-card zk-card--iskelet" aria-hidden="true"></div>'
+        : skeletonCards(vitrinKartela() ? 3 : 6);
+}
+
+// ============================================================
+// VİTRİN KARUSELİ (ana sayfa) — panelden YAYINA ALINMIŞ ürünlerle döner.
+// Ürünler /api/kumaslar'dan gelir (yalnızca yayinda=true); her kart ürünün
+// panelde "ana" seçilen fotoğrafını gösterir. Panelden ürün eklenince/taslağa
+// alınınca karusel kendiliğinden güncellenir.
+//   - Öndeki kart düz, yanlardakiler 3B eğik; KARUSEL_SURE'de bir ilerler.
+//   - Yandaki karta tıkla → öne gelir; öndekine tıkla → teklif formu (kumaş adıyla).
+//   - Oklar, noktalar, parmakla kaydırma ve klavye (← →) ile gezilir.
+//   - Fare üstündeyken / klavye odağı içerdeyken / ekran dışındayken / sekme
+//     gizliyken durur; "hareketi azalt" tercihinde kendiliğinden dönmez.
+// ============================================================
+const KARUSEL_SURE = 3200;   // otomatik ilerleme aralığı (ms)
+const KARUSEL_EN_FAZLA = 12; // performans: en fazla bu kadar kart
+
+function initVitrinKarusel(list) {
+    const stage = $('#vitrin-container');
+    const kap = stage && stage.closest('[data-vitrin-karusel]');
+    if (!stage || !kap) return;
+    const kontrol = $('[data-karusel-kontrol]', kap);
+    const noktalar = kontrol && $('.zk-dots', kontrol);
+
+    const urunler = list.slice(0, KARUSEL_EN_FAZLA);
+    const n = urunler.length;
+    let i = 0, uzerinde = false, odakta = false, gorunur = true, x0 = null, kaydirdi = false;
+
+    stage.innerHTML = urunler.map((f) => {
+        const ad = esc(f.isim);
+        return `
+            <button type="button" class="zk-card">
+                <img src="${esc(safeImg(f.kartela_resmi))}" alt="${ad} döşemelik kumaş kartelası" loading="lazy" decoding="async"
+                     onerror="this.onerror=null;this.src='${FALLBACK_IMG}';">
+                <span class="zk-shade"></span><span class="zk-dim"></span>
+                <span class="zk-tag">Kartela</span>
+                <span class="zk-info">
+                    <span class="zk-name font-display">${ad}</span>
+                    <span class="zk-sub">Top &amp; kesmece · Teklif al</span>
+                </span>
+            </button>`;
+    }).join('');
+    const kartlar = $$('.zk-card', stage);
+
+    if (noktalar) {
+        noktalar.innerHTML = urunler.map((f) => `<button type="button" aria-label="${esc(f.isim)}"><span></span></button>`).join('');
+    }
+    const noktaButonlari = noktalar ? $$('button', noktalar) : [];
+
+    function ciz() {
+        kartlar.forEach((c, k) => {
+            let o = ((k - i) % n + n) % n;
+            if (o > n / 2) o -= n;
+            const a = Math.abs(o);
+            c.style.transform = `translate(-50%,-50%) translateX(calc(var(--sp) * ${o})) translateZ(${-a * 170}px) rotateY(${-o * 34}deg)`;
+            c.style.opacity = a > 3 ? '0' : '1';
+            c.style.zIndex = String(20 - a);
+            c.style.pointerEvents = a > 3 ? 'none' : 'auto';
+            c.tabIndex = a > 3 ? -1 : 0;
+            c.setAttribute('aria-label', a === 0
+                ? `${urunler[k].isim} için teklif iste`
+                : `${urunler[k].isim} kartelasını öne getir`);
+            c.querySelector('.zk-dim').style.opacity = a === 0 ? '0' : String(Math.min(0.5, a * 0.16));
+        });
+        noktaButonlari.forEach((d, k) => d.setAttribute('aria-current', k === i ? 'true' : 'false'));
+    }
+    function git(k) { i = ((k % n) + n) % n; ciz(); }
+
+    kartlar.forEach((c, k) => c.addEventListener('click', () => {
+        if (kaydirdi) return;
+        if (k === i) teklifFormunaGit(urunler[k].isim);
+        else git(k);
+    }));
+    noktaButonlari.forEach((d, k) => d.addEventListener('click', () => git(k)));
+    if (kontrol) $$('.zk-arrow', kontrol).forEach((b) => b.addEventListener('click', () => git(i + Number(b.dataset.dir))));
+
+    // Durdurma koşulları
+    kap.addEventListener('mouseenter', () => { uzerinde = true; });
+    kap.addEventListener('mouseleave', () => { uzerinde = false; });
+    kap.addEventListener('focusin', () => { odakta = true; });
+    kap.addEventListener('focusout', (e) => { if (!kap.contains(e.relatedTarget)) odakta = false; });
+    if ('IntersectionObserver' in window) {
+        new IntersectionObserver((g) => g.forEach((x) => { gorunur = x.isIntersecting; }), { threshold: 0.2 }).observe(kap);
+    }
+
+    // Klavye: ← →
+    kap.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') { e.preventDefault(); git(i + 1); }
+        else if (e.key === 'ArrowLeft') { e.preventDefault(); git(i - 1); }
+    });
+
+    // Parmakla / fareyle kaydırma
+    stage.addEventListener('pointerdown', (e) => { x0 = e.clientX; kaydirdi = false; });
+    stage.addEventListener('pointercancel', () => { x0 = null; });
+    stage.addEventListener('pointerup', (e) => {
+        if (x0 === null) return;
+        const d = e.clientX - x0; x0 = null;
+        if (Math.abs(d) > 40) {
+            kaydirdi = true;
+            git(i + (d < 0 ? 1 : -1));
+            setTimeout(() => { kaydirdi = false; }, 50);
+        }
+    });
+
+    if (n > 1 && kontrol) kontrol.hidden = false;
+    const azalt = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!azalt && n > 1) {
+        setInterval(() => {
+            if (!uzerinde && !odakta && gorunur && !document.hidden) git(i + 1);
+        }, KARUSEL_SURE);
+    }
+    ciz();
 }
 function setVitrinError() {
     const c = $('#vitrin-container');
@@ -520,6 +642,10 @@ function renderVitrin(fabrics) {
         if (tekil.size) sayac.textContent = String(tekil.size);
     }
 
+    if (vitrinStili() === 'karusel') {
+        initVitrinKarusel(list);
+        return;
+    }
     container.innerHTML = vitrinKartela()
         ? list.slice(0, 9).map(createVitrinCard).join('')
         : list.slice(0, 6).map(createFabricCard).join('');

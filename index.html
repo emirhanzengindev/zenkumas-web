@@ -170,7 +170,7 @@
         </section>
 
         <!-- VİTRİN -->
-        <section id="vitrin" class="py-16 lg:py-24 bg-cream scroll-mt-16 lg:scroll-mt-20">
+        <section id="vitrin" class="py-16 lg:py-24 bg-cream scroll-mt-16 lg:scroll-mt-20 overflow-hidden">
             <div class="max-w-7xl mx-auto px-4 lg:px-8">
                 <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 reveal">
                     <div>
@@ -183,8 +183,22 @@
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                     </a>
                 </div>
-                <div id="vitrin-container" data-vitrin-stil="kartela" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mt-10">
-                    <!-- JS doldurur (main.js → renderVitrin) -->
+                <!-- DÖNEN VİTRİN KARUSELİ: kartlar panelden YAYINA ALINMIŞ ürünlerden gelir
+                     (main.js → renderVitrin → initVitrinKarusel; stiller styles.css → .zk-*) -->
+                <div class="zk-karusel mt-6" data-vitrin-karusel>
+                    <div id="vitrin-container" data-vitrin-stil="karusel" class="zk-stage"
+                         aria-roledescription="karusel" aria-label="Kumaş koleksiyonları">
+                        <!-- JS doldurur -->
+                    </div>
+                    <div class="zk-controls" data-karusel-kontrol hidden>
+                        <button type="button" class="zk-arrow" data-dir="-1" aria-label="Önceki kumaş">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+                        </button>
+                        <div class="zk-dots"></div>
+                        <button type="button" class="zk-arrow" data-dir="1" aria-label="Sonraki kumaş">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </section>
