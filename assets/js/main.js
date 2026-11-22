@@ -100,7 +100,90 @@ document.addEventListener('DOMContentLoaded', function () {
     initializeReveal();
 
     initDynamicProducts();
+    initTeklifFormlari();
 });
+
+// ============================================================
+// TEKLİF / İLETİŞİM FORMLARI → POST /api/teklif
+// `data-teklif-form` işaretli her form bağlanır (iletişim sayfası + ana sayfa).
+// Alan adları backend ile aynıdır: ad_soyad, email, telefon, konu, mesaj,
+// website (bot tuzağı, görünmez). Kaynak formdaki data-kaynak'tan gelir.
+// Sonuç kutuları formun EBEVEYNİNDE aranır: [data-teklif-basari], [data-teklif-hata].
+// ============================================================
+function initTeklifFormlari() {
+    document.querySelectorAll('form[data-teklif-form]').forEach((form) => {
+        const kutu = form.parentElement;
+        const basari = kutu.querySelector('[data-teklif-basari]');
+        const hata = kutu.querySelector('[data-teklif-hata]');
+        const buton = form.querySelector('button[type="submit"]');
+        let gonderiliyor = false;
+
+        const hataGoster = (mesaj) => {
+            if (basari) basari.classList.add('hidden');
+            if (!hata) { alert(mesaj); return; }
+            hata.textContent = mesaj; // textContent: sunucu mesajı HTML olarak yorumlanmaz
+            hata.classList.remove('hidden');
+        };
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (gonderiliyor) return;
+            if (hata) hata.classList.add('hidden');
+
+            const veri = Object.fromEntries(new FormData(form));
+            const dolu = (v) => typeof v === 'string' && v.trim() !== '';
+
+            // İstemci tarafı ön kontrol (asıl doğrulama sunucuda).
+            if (!dolu(veri.ad_soyad) || !dolu(veri.mesaj) || (form.elements.konu && !dolu(veri.konu))) {
+                return hataGoster('Lütfen * ile işaretli alanları doldurun.');
+            }
+            if (!dolu(veri.email) && !dolu(veri.telefon)) {
+                return hataGoster('Size dönüş yapabilmemiz için telefon veya e-posta adresinizi yazın.');
+            }
+
+            veri.kaynak = form.dataset.kaynak || 'iletisim';
+            const base = (window.ZEN_CONFIG && window.ZEN_CONFIG.getApiBase) ? window.ZEN_CONFIG.getApiBase() : '';
+            const eskiMetin = buton ? buton.innerHTML : '';
+            gonderiliyor = true;
+            if (buton) { buton.disabled = true; buton.classList.add('opacity-60'); buton.textContent = 'Gönderiliyor…'; }
+
+            try {
+                // Render ücretsiz planı uykudaysa ilk istek uzun sürebilir: 60 sn tanınır.
+                const ctrl = new AbortController();
+                const zaman = setTimeout(() => ctrl.abort(), 60000);
+                const res = await fetch(base + '/api/teklif', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify(veri),
+                    signal: ctrl.signal,
+                });
+                clearTimeout(zaman);
+                const cevap = await res.json().catch(() => ({}));
+
+                if (res.ok) {
+                    form.reset();
+                    if (basari) {
+                        basari.classList.remove('hidden');
+                        basari.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                    return;
+                }
+                if (res.status === 429) {
+                    return hataGoster(cevap.message || 'Çok fazla talep gönderdiniz. Lütfen biraz sonra tekrar deneyin.');
+                }
+                if (res.status === 400 && Array.isArray(cevap.errors) && cevap.errors.length) {
+                    return hataGoster(cevap.errors[0].msg || 'Lütfen form alanlarını kontrol edin.');
+                }
+                hataGoster('Mesajınız gönderilemedi. Lütfen tekrar deneyin veya bizi telefonla arayın: 0 (532) 708 16 25');
+            } catch {
+                hataGoster('Sunucuya ulaşılamadı. Lütfen tekrar deneyin veya bizi telefonla arayın: 0 (532) 708 16 25');
+            } finally {
+                gonderiliyor = false;
+                if (buton) { buton.disabled = false; buton.classList.remove('opacity-60'); buton.innerHTML = eskiMetin; }
+            }
+        });
+    });
+}
 
 // Ürün ekranları: ana sayfada slider + vitrin, kumaşlar sayfasında filtreli grid.
 // TEK fetch; her ekran önce iskeletini çizer, veri gelince doldurur, hata çıkarsa

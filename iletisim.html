@@ -181,22 +181,27 @@
                     <h2 class="font-display text-2xl font-bold mb-2">Bize Yazın</h2>
                     <p class="text-sm text-ink-muted mb-8">Hangi kumaştan kaç metre istediğinizi yazın, en kısa sürede dönüş yapalım.</p>
 
-                    <form id="contact-form" class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    <form id="contact-form" data-teklif-form data-kaynak="iletisim" novalidate class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
                             <label for="name" class="block text-sm font-medium text-ink-soft mb-1.5">Ad Soyad *</label>
-                            <input type="text" id="name" name="name" required class="form-input" placeholder="Adınız ve soyadınız">
+                            <input type="text" id="name" name="ad_soyad" required maxlength="120" autocomplete="name" class="form-input" placeholder="Adınız ve soyadınız">
                         </div>
                         <div>
-                            <label for="email" class="block text-sm font-medium text-ink-soft mb-1.5">E-posta *</label>
-                            <input type="email" id="email" name="email" required class="form-input" placeholder="ornek@mail.com">
+                            <label for="phone" class="block text-sm font-medium text-ink-soft mb-1.5">Telefon **</label>
+                            <input type="tel" id="phone" name="telefon" maxlength="40" autocomplete="tel" class="form-input" placeholder="0 (5XX) XXX XX XX">
                         </div>
                         <div>
-                            <label for="phone" class="block text-sm font-medium text-ink-soft mb-1.5">Telefon</label>
-                            <input type="tel" id="phone" name="phone" class="form-input" placeholder="0 (5XX) XXX XX XX">
+                            <label for="email" class="block text-sm font-medium text-ink-soft mb-1.5">E-posta **</label>
+                            <input type="email" id="email" name="email" maxlength="254" autocomplete="email" class="form-input" placeholder="ornek@mail.com">
+                        </div>
+                        <!-- Bot tuzağı: insanlar görmez/doldurmaz; dolduran istek kaydedilmez. -->
+                        <div aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden;">
+                            <label for="website">Web siteniz</label>
+                            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
                         </div>
                         <div>
                             <label for="subject" class="block text-sm font-medium text-ink-soft mb-1.5">Konu *</label>
-                            <select id="subject" name="subject" required class="form-input">
+                            <select id="subject" name="konu" required class="form-input">
                                 <option value="">Seçiniz...</option>
                                 <option>Fiyat Teklifi</option>
                                 <option>Top Alım</option>
@@ -208,10 +213,10 @@
                         </div>
                         <div class="sm:col-span-2">
                             <label for="message" class="block text-sm font-medium text-ink-soft mb-1.5">Mesaj *</label>
-                            <textarea id="message" name="message" rows="5" required class="form-input resize-none" placeholder="Merhaba, Soho kumaştan 40 metre için fiyat almak istiyorum..."></textarea>
+                            <textarea id="message" name="mesaj" rows="5" required maxlength="2000" class="form-input resize-none" placeholder="Merhaba, Soho kumaştan 40 metre için fiyat almak istiyorum..."></textarea>
                         </div>
                         <div class="sm:col-span-2 flex items-center justify-between gap-4 flex-wrap">
-                            <p class="text-xs text-ink-muted">* ile işaretli alanlar zorunludur.</p>
+                            <p class="text-xs text-ink-muted">* zorunlu alan · ** telefon veya e-postadan en az biri</p>
                             <button type="submit" class="inline-flex items-center gap-2 bg-ink text-cream font-semibold px-8 py-3.5 rounded-full hover:bg-bronze transition shadow-soft">
                                 Mesaj Gönder
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18 9 2m-9 10.89L7 15" transform="rotate(-90 12 12)"/></svg>
@@ -219,10 +224,11 @@
                         </div>
                     </form>
 
-                    <!-- Başarı mesajı (JS ile gösterilir) -->
-                    <div id="form-success" class="hidden mt-6 bg-green-50 border border-green-200 text-green-800 text-sm rounded-xl px-5 py-4">
+                    <!-- Sonuç mesajları (assets/js/main.js → initTeklifFormlari) -->
+                    <div data-teklif-basari role="status" class="hidden mt-6 bg-green-50 border border-green-200 text-green-800 text-sm rounded-xl px-5 py-4">
                         ✅ Mesajınız başarıyla alındı! En kısa sürede size dönüş yapacağız.
                     </div>
+                    <div data-teklif-hata role="alert" class="hidden mt-6 bg-red-50 border border-red-200 text-red-800 text-sm rounded-xl px-5 py-4"></div>
                 </div>
             </div>
 
@@ -329,22 +335,8 @@
         <span class="text-xl font-bold font-display">Z</span>
     </button>
 
-    <script>
-        // İletişim formu (bu sayfaya özel tek script)
-        document.getElementById('contact-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-            const data = Object.fromEntries(new FormData(this));
-            console.log('Form Data:', data);
-
-            const success = document.getElementById('form-success');
-            success.classList.remove('hidden');
-            this.reset();
-            success.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            setTimeout(() => success.classList.add('hidden'), 6000);
-        });
-    </script>
-
-    <!-- Custom JS -->
+    <!-- API adresi (config.js) + form gönderimi (main.js → initTeklifFormlari) -->
+    <script src="assets/js/config.js"></script>
     <script src="assets/js/main.js"></script>
 </body>
 </html>

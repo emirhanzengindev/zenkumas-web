@@ -293,6 +293,7 @@
         { key: 'dashboard', label: 'Genel Bakış', href: 'index.html', icon: 'M3 12l9-9 9 9M5 10v10h6v-6h2v6h6V10' },
         { key: 'products', label: 'Ürünler', href: 'urunler.html', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
         { key: 'new', label: 'Yeni Ürün Ekle', href: 'urun-duzenle.html', icon: 'M12 4v16m8-8H4' },
+        { key: 'leads', label: 'Teklif Talepleri', href: 'teklifler.html', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
     ];
 
     function renderLayout(activeKey) {
